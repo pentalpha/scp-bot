@@ -1,7 +1,7 @@
 #ifndef _SERVER_
 #define _SERVER_
 
-#include <iostream>     //cout
+/*#include <iostream>     //cout
 #include <cstring>      //memset
 #include <cstdlib>      //exit
 #include <netinet/in.h> //htons
@@ -10,10 +10,10 @@
 #include <unistd.h>     //close
 #include <thread>
 #include "StringQueue.h"
-#include <string>
-#include "logging.h"
+#include <string>*/
+#include "Socket.h"
 
-#define MAXMSG 1024
+/*#define MAXMSG 1024
 
 using namespace std;
 
@@ -30,11 +30,11 @@ public:
 private:
   void waitForClientAndReceive();
   bool getSocket();
-  bool doBind();
+  
   bool startListening();
   StringQueue messages;
   bool connected;
-  bool waitingFlag;
+  
   bool exitFlag;
   //variáveis do servidor
   struct sockaddr_in address;
@@ -46,6 +46,24 @@ private:
   //Permitir inserir o caractere de fim de msg \0
   char *msg;
   int bytesread;
+};*/
+
+class Server : public Socket{
+public:
+  Server(const char* localIP, int portNumber);
+  bool startTransaction();
+  bool isWaiting();
+  bool isBinded();
+  bool sendToClient(std::string str);
+protected:
+  int waitForClient();
+  bool doBind();
+  bool startListening();
+  bool waitingFlag, bindedFlag;
+  //client related information
+  struct sockaddr_in addressClient;
+  socklen_t sizeAddressClient;
+  int connectionClientId;
 };
 
 #endif

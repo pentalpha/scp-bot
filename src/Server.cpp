@@ -1,11 +1,9 @@
 #include "Server.h"
 
-Server::Server(const char* localIP, int portNumber){
+/*Server::Server(const char* localIP, int portNumber){
   sizeAddressClient = sizeof(struct sockaddr);
   msg = new char[MAXMSG+1];
-  /*
-   * Configurações do endereço
-  */
+  //Configurações do endereço
   memset(&address, 0, sizeof(address));
   address.sin_family = AF_INET;
   address.sin_port = htons(portNumber);
@@ -31,13 +29,6 @@ bool Server::start(){
 }
 
 bool Server::getSocket(){
-  /*
-   * Criando o Socket
-   *
-   * PARAM1: AF_INET ou AF_INET6 (IPV4 ou IPV6)
-   * PARAM2: SOCK_STREAM ou SOCK_DGRAM
-   * PARAM3: protocolo (IP, UDP, TCP, etc). Valor 0 escolhe automaticamente
-  */
   socketId = socket(AF_INET, SOCK_STREAM, 0);
   //Verificar erros
   if (socketId == -1)
@@ -144,4 +135,89 @@ void Server::waitForClientAndReceive(){
   waitingFlag = false;
   connected = false;
   close(connectionClientId);
+}*/
+
+Server::Server(const char* localIP, int portNumber)
+    : Socket(localIP, portNumber)
+{
+    sizeAddressClient = sizeof(struct sockaddr);
+
+    waitingFlag = false;
+    bindedFlag = doBind();
+    if(bindedFlag == false){
+        exitFlag = true;
+    }
 }
+
+bool Server::doBind(){
+    //Conectando o socket a uma porta. Executado apenas no lado servidor
+    if (bind (socketId, (struct sockaddr *)&addr, sizeof(struct sockaddr)) == -1)
+    {
+        log("SERVER", "Failed to bind() a port");
+        return false;
+    }else{
+        return true;
+    }
+}
+
+bool Server::startListening(){
+  //Habilitando o servidor a receber conexoes do cliente
+  if (listen( socketId, 10 ) == -1)
+  {
+      log("SERVER", "Failed to listen()");
+      return false;
+  }else{
+      return true;
+  }
+}
+
+int Server::waitForClient(){
+    if(!bindedFlag){
+        return -1;
+    }
+    if(!startListening()){
+        return -1;
+    }
+    waitingFlag = true;
+    //Servidor fica bloqueado esperando uma conexão do cliente
+    memset(&addressClient, 0, sizeAddressClient);
+    int remoteClientId = accept(socketId, (struct sockaddr *) &addressClient, &sizeAddressClient);
+
+    log("SERVER", std::string("Connected to ") + std::string(inet_ntoa(addressClient.sin_addr)));
+    waitingFlag = false;
+    //Verificando erros
+    if (remoteClientId == -1)
+    {
+        log("SERVER", std::string("Failed to accept(), error: ") + std::to_string(errno));
+        exitFlag = true;
+        return -1;
+    }
+    connected = true;
+    return remoteClientId;
+}
+
+bool Server::startTransaction(){
+    if(exitFlag || !isBinded()){
+        return false;
+    }
+    connectionClientId = waitForClient();
+    if(connectionClientId != -1){
+        startReceiving(connectionClientId);
+        return true;
+    }
+    return false;
+}
+
+bool Server::sendToClient(std::string str){
+    sendAMsg(str, connectionClientId);
+}
+
+bool Server::isBinded(){
+    return bindedFlag;
+}
+
+bool Server::isWaiting(){
+    return waitingFlag;
+}
+
+

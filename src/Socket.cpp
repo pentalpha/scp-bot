@@ -55,18 +55,26 @@ void Socket::closeSocket(){
     close(socketId);
 }
 
-void Socket::startReceiving(){
-    std::thread theThread(&Socket::receiveMessagesThread, this);
+std::string Socket::getMessage(){
+  std::string msg = received.pop();
+  return msg;
+}
+
+void Socket::startReceiving(int targetId){
+    if(targetId == -1){
+        targetId = socketId;
+    }
+    std::thread theThread(&Socket::receiveMessagesThread, this, targetId);
     theThread.join();
 }
 
-void Socket::receiveMessagesThread(){
+void Socket::receiveMessagesThread(int targetId){
     receiving = true;
     char* msg = new char[MAXMSG+1];
     int bytesread = 0;
     while(!exitFlag && connected){
         log("SOCKET", "SOCKET waiting for a message...");
-        bytesread = recv(socketId,msg,MAXMSG,0);
+        bytesread = recv(targetId,msg,MAXMSG,0);
         if (bytesread == -1)
         {
             log("SOCKET", "Failed to recv()");
@@ -86,23 +94,30 @@ void Socket::receiveMessagesThread(){
             std::string *s = new std::string(msg);
             received.push(s);
         }
-        //close(connectionClientId);
+        //
+    }
+    if(targetId != socketId){
+        close(targetId);
     }
     finish();
 }
 
-void Socket::sendAMsg(std::string msg){
+bool Socket::sendAMsg(std::string msg, int targetId){
+    if(targetId == -1){
+        targetId = socketId;
+    }
     std::string str = msg;
     int bytesenviados;
     //log("SOCKET", "SOCKETe vai enviar uma mensagem");
     //recv(connectionSOCKETId,msg,MAXMSG,0);
-    bytesenviados = send(socketId,str.c_str(),strlen(str.c_str()),0);
+    bytesenviados = send(targetId,str.c_str(),strlen(str.c_str()),0);
 
     if (bytesenviados == -1)
     {
         log("SOCKET", "Falha ao executar send()");
-        exit(EXIT_FAILURE);
+        return false;
     }
     log("SOCKET", std::string("SOCKET enviou a seguinte msg (") + std::to_string(bytesenviados) 
         + std::string(" bytes) para o servidor:") + str);
+    return true;
 }

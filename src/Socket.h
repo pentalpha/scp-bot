@@ -24,6 +24,7 @@ public:
     bool isConnected();
     void waitToFinish();
     void finish();
+    std::string getMessage();
 protected:
     /*
     * Configurações do endereço
@@ -36,9 +37,10 @@ protected:
     * PARAM3: protocolo (IP, UDP, TCP, etc). Valor 0 escolhe automaticamente*/
     bool createSocket();
     //Enviar uma msg
-    void sendAMsg(std::string msg);
-    void startReceiving();
-    void receiveMessagesThread();
+    bool sendAMsg(std::string msg, int targetId = -1);
+    void startReceiving(int targetId = -1);
+    void receiveMessagesThread(int targetId);
+    
     //close client's socket
     void closeSocket();
 

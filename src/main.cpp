@@ -32,15 +32,16 @@ int main(int argc, char * argv[]){
 
 void startServer(string ip, int port){
     Server server(ip.c_str(), port);
-    server.start();
+    server.startTransaction();
     cout << "Started\n";
-    server.startWaiting();
+    server.waitToFinish();
+    /*server.startWaiting();
     while(server.isWaiting()){
 
     }
     while(server.isConnected()){
 
-    }
+    }*/
     log("MAIN", "Server not connected anymore");
     //server.stop();
 }
