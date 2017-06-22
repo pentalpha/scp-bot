@@ -72,8 +72,10 @@ void Socket::receiveMessagesThread(int targetId){
     receiving = true;
     char* msg = new char[MAXMSG+1];
     int bytesread = 0;
+    std::string buffer = "";
     while(!exitFlag && connected){
         log("SOCKET", "SOCKET waiting for a message...");
+        memset(msg, 0, sizeof(msg));
         bytesread = recv(targetId,msg,MAXMSG,0);
         if (bytesread == -1)
         {
@@ -89,10 +91,10 @@ void Socket::receiveMessagesThread(int targetId){
         }else{
             //Inserir o caracter de fim de mensagem
             msg[bytesread] = '\0';
-            log("SOCKET", std::string("Servidor recebeu a seguinte msg do cliente: ") 
-                + std::string(msg));
-            std::string *s = new std::string(msg);
-            received.push(s);
+            std::string message(msg);
+            //log("SOCKET", std::string("recv() = ") 
+            //    + message);
+            buffer = retrieveMessagesFromBufferAndRecv(buffer, message);
         }
         //
     }
@@ -100,6 +102,32 @@ void Socket::receiveMessagesThread(int targetId){
         close(targetId);
     }
     finish();
+}
+
+std::string Socket::retrieveMessagesFromBufferAndRecv(std::string buffer, std::string message){
+    buffer = buffer + message;
+    //log("SOCKET", std::string("Buffer: ") + buffer);
+    int i = 0;
+    int lastLineBreak;
+    int msgStart = 0;
+    while(i < buffer.length()){
+        if(buffer[i] == '\n'){
+            lastLineBreak = i;
+            std::string subMsg = buffer.substr(msgStart, lastLineBreak - msgStart);
+            addMsgToReceiveds(subMsg);
+            msgStart = i+1;
+        }
+        i++;
+    }
+    std::string bufferLeft = buffer.substr(msgStart, buffer.length());
+    //log("SOCKET", std::string("Buffer left: ") + bufferLeft);
+    return bufferLeft;
+}
+
+void Socket::addMsgToReceiveds(std::string message){
+    std::string *s = new std::string(message);
+    log("SOCKET", std::string("Received: ") + message);
+    received.push(s);
 }
 
 bool Socket::sendAMsg(std::string msg, int targetId){

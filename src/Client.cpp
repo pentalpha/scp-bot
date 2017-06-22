@@ -8,7 +8,7 @@ Client::Client(std::string hostAddr, int portN)
 
 bool Client::startTransaction(){
     if(connectToHost()){
-        sendAMsg("Ola, servidor\nOla, servidor\nOla ola ola\nOla");
+        sendAMsg("Ola, servidor\nOla, servidor\nOla ola ola\nOla\n");
         startReceiving();
         return true;
     }

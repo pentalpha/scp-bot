@@ -180,7 +180,7 @@ int Server::waitForClient(){
     }
     waitingFlag = true;
     //Servidor fica bloqueado esperando uma conexão do cliente
-    memset(&addressClient, 0, sizeAddressClient);
+    //memset(&addressClient, 0, sizeAddressClient);
     int remoteClientId = accept(socketId, (struct sockaddr *) &addressClient, &sizeAddressClient);
 
     log("SERVER", std::string("Connected to ") + std::string(inet_ntoa(addressClient.sin_addr)));

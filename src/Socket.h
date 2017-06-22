@@ -39,7 +39,7 @@ protected:
     //Enviar uma msg
     bool sendAMsg(std::string msg, int targetId = -1);
     void startReceiving(int targetId = -1);
-    void receiveMessagesThread(int targetId);
+    
     
     //close client's socket
     void closeSocket();
@@ -50,6 +50,10 @@ protected:
     std::string hostAddress;
     StringQueue received;
     bool connected, exitFlag, receiving;
+private:
+    std::string retrieveMessagesFromBufferAndRecv(std::string buffer, std::string message);
+    void addMsgToReceiveds(std::string message);
+    void receiveMessagesThread(int targetId);
 };
 
 #endif
