@@ -108,14 +108,15 @@ void Server::waitForClientAndReceive(){
   connectionClientId = accept( socketId,(struct sockaddr *) &addressClient,&sizeAddressClient );
 
   log("SERVER", std::string("Connected to ") + std::string(inet_ntoa(addressClient.sin_addr)));
-  connected = true;
   waitingFlag = false;
   //Verificando erros
   if (connectionClientId == -1)
   {
       log("SERVER", std::string("Failed to accept(), error: ") + std::to_string(errno));
+      exitFlag = true;
       return;
   }
+  connected = true;
   while(!exitFlag){
     //receber uma msg do cliente
     //log("SERVER", "Server waiting for a message...\n";

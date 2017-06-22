@@ -47,4 +47,6 @@ void startServer(string ip, int port){
 
 void startClient(string ip, int port){
     Client client(ip, port);
+    client.startTransaction();
+    client.waitToFinish();
 }

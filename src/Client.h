@@ -9,39 +9,19 @@
 #include <sys/socket.h> //socket
 #include <unistd.h>     //close
 #include <string>
+#include <chrono>
+#include <thread>
 #include "logging.h"
- 
-#define MAXMSG 1024
+#include "StringQueue.h"
+#include "Socket.h"
 
-class Client{
+class Client : public Socket{
 public:
     Client(std::string hostAddr, int portN);
-
-    /*
-    * Configurações do endereço
-    */
-    void configAddr();
-    
-    /*Criando o Socket
-    * PARAM1: AF_INET ou AF_INET6 (IPV4 ou IPV6)
-    * PARAM2: SOCK_STREAM ou SOCK_DGRAM
-    * PARAM3: protocolo (IP, UDP, TCP, etc). Valor 0 escolhe automaticamente*/
-    void createSocket();
-
-    //Conectando o socket cliente ao socket servidor
-    void connectToHost();
-
-    //Enviar uma msg do cliente que se conectou
-    void sendAMsg();
-
-    //close client's socket
-    void closeSocket();
-
+    bool startTransaction();
 private:
-    struct sockaddr_in addr;
-    int socketId;
-    int hostPort;
-    std::string hostAddress;
+    //Conectando o socket cliente ao socket servidor
+    bool connectToHost(); 
 };
 
 #endif

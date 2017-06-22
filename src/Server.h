@@ -14,7 +14,6 @@
 #include "logging.h"
 
 #define MAXMSG 1024
-#define PORTNUM 50001
 
 using namespace std;
 
