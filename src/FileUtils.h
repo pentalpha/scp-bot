@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <vector>
+#include <unordered_set>
 #include "tinydir.h"
 
 using namespace std;
@@ -37,15 +38,15 @@ time_t getLastModTime(const char* filePath);
 
 void compareTwoFiles(char * argv[]);
 
-vector<tinydir_file> getSubFiles(bool dirs = false, string dir = "./");
+vector<tinydir_file> getSubFiles(string dir = "./");
 
 FileInfo getFileInfo(string filePath,
                     string fileName);
 
 FileInfo getFileInfo(tinydir_file file);
 
-vector<FileInfo> getFileInfoFromDir(bool dirs = false, string dir = "./");
-
-void scanLocalFiles();
+//unordered_set<FileInfo> getFileInfoFromDir(bool dirs = false, string dir = "./");
+unordered_set<string> getDirs(string dirToScan = "./");
+//void scanLocalFiles();
 
 #endif

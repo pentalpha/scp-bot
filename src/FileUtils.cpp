@@ -44,7 +44,31 @@ void compareTwoFiles(char * argv[]){
     cout << "Current time: " << timeToChar(time(NULL)) << endl;
 }
 
-vector<tinydir_file> getSubFiles(bool dirs, string dirToScan){
+bool isValidDirToScan(string path){
+    bool open = true;
+    char last, last2, last3;
+    int len = path.length();
+    last = path[len-1];
+    if(last == '.'){
+        if(len >= 2){
+            last2 = path[len-2];
+            if(last2 == '/'){
+                open = false;
+            }else if(last2 == '.'){
+                if(len >= 3){
+                    last3 = path[len-3];
+                    if(last3 == '/'){
+                        open = false;
+                    }
+                }
+            }
+        }
+    }
+    return open;
+}
+
+vector<tinydir_file> getSubFiles(string dirToScan){
+    //cout << "scanning " << dirToScan << endl;
     vector<tinydir_file> files;
     tinydir_dir dir;
     tinydir_open(&dir, dirToScan.c_str());
@@ -52,13 +76,22 @@ vector<tinydir_file> getSubFiles(bool dirs, string dirToScan){
     while(dir.has_next){
         tinydir_file file;
         tinydir_readfile(&dir, &file);
-        bool condition = !file.is_dir;
-        if(dirs){
-            condition = file.is_dir;
-        }
-        if(condition){
-            //cout << file.path << endl;
-            //string fileName = file.path;
+        bool isDir = file.is_dir;
+        if(isDir){
+            bool open = isValidDirToScan(file.path);
+            //cout << "open? '" << file.path << "' : " << open << endl;
+            if(open){
+                vector<tinydir_file> subFiles = getSubFiles(file.path);
+                if(subFiles.size() > 0){
+                    //cout << file.path << " adding subfiles:\n";
+                    files.insert(std::end(files), std::begin(subFiles),
+                            std::end(subFiles));
+                }else{
+                    //cout << file.path << " is empty\n";
+                }
+                files.push_back(file);
+            }
+        }else{
             files.push_back(file);
         }
         tinydir_next(&dir);
@@ -83,7 +116,7 @@ FileInfo getFileInfo(string filePath,
     return info;
 }
 
-vector<FileInfo> getFileInfoFromDir(bool dirs, string dirToScan){
+/*unordered_set<FileInfo> getFileInfoFromDir(bool dirs, string dirToScan){
     if(dirs){
         //cout << "Getting subdirs";
     }else{
@@ -92,31 +125,61 @@ vector<FileInfo> getFileInfoFromDir(bool dirs, string dirToScan){
     //cout << " for " << dirToScan << endl;
     vector<tinydir_file> tinyFiles = getSubFiles(dirs, dirToScan);
     //cout << "got them" << endl;
-    vector<FileInfo> fileInfos;
+    unordered_set<FileInfo> fileInfos;
     for(tinydir_file f : tinyFiles)
     {
         //cout << "Trying to get file info for " << f.path << endl;
         FileInfo info = getFileInfo(f);
         //cout << "Got the info\n";
-        fileInfos.push_back(info);
+        fileInfos.insert(info);
     }
     return fileInfos;
+}*/
+
+unordered_set<string> getDirs(string dirToScan){
+    unordered_set<string> dirs;
+    tinydir_dir dir;
+
+    tinydir_open(&dir, dirToScan.c_str());
+    while(dir.has_next){
+        tinydir_file file;
+        tinydir_readfile(&dir, &file);
+        bool isDir = file.is_dir;
+        if(file.is_dir){
+            bool open = isValidDirToScan(file.path);
+            //cout << "open? '" << file.path << "' : " << open << endl;
+            if(open){
+                unordered_set<string> subDirs = getDirs(file.path);
+                if(subDirs.size() > 0){
+                    //cout << file.path << " adding subfiles:\n";
+                    dirs.insert(subDirs.begin(), subDirs.end());
+                }else{
+                    //cout << file.path << " is empty\n";
+                }
+                dirs.insert(file.path);
+            }
+        }
+        tinydir_next(&dir);
+    }
+    tinydir_close(&dir);
+
+    return dirs;
 }
 
-void scanLocalFiles(){
-    vector<FileInfo> localFiles = getFileInfoFromDir();
+/*void scanLocalFiles(){
+    auto localFiles = getFileInfoFromDir();
     cout << "Local files:\n";
     for(FileInfo s : localFiles){
         cout << "\t" << s.path << "\t" << timeToChar(s.lastModification) << endl;
     }
-    vector<FileInfo> localDirs = getFileInfoFromDir(true);
+    auto localDirs = getFileInfoFromDir(true);
     cout << "Local dirs:\n";
     for(FileInfo s : localDirs){
         cout << "\t" << s.path << "\t" << timeToChar(s.lastModification) << endl;
     }
-    vector<FileInfo> userFiles = getFileInfoFromDir(false, "/home/pitagoras/");
+    auto userFiles = getFileInfoFromDir(false, "/home/pitagoras/");
     cout << "User files:\n";
     for(FileInfo s : userFiles){
         cout << "\t" << s.path << "\t" << timeToChar(s.lastModification) << endl;
     }
-}
+}*/

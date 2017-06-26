@@ -1,31 +1,5 @@
 #include "SyncDir.h"
 
-/*struct SyncDirDiff{
-    vector<string> missingDirs, missingFiles;
-    vector<string> newDirs, newFiles;
-}
-
-//Directory to sync. Can represent the data on the remote too
-class SyncDir{
-public:
-    SyncDir(string dir, bool local = true);
-    static SyncDirDiff diff(SyncDir* other);
-
-private:
-    void updateFilesAndDirs();
-    void searchForNewFiles();
-    void updateModTimes();
-    void updateDirs();
-
-    string directory;
-    bool remote, updateFlag, finishFlag;
-    map<string, FileInfo> files;
-    map<string, FileInfo> subDirs;
-
-    mutex updateMutex;
-    thread* updatingThread;
-};*/
-
 SyncDir::SyncDir(string dir, bool local){
     updateFlag = local;
     finishFlag = false;
@@ -57,9 +31,9 @@ void SyncDir::rmFile(string filePath){
     files.erase(filePath);
     updateMutex.unlock();
 }
-void SyncDir::addDir(FileInfo dir){
+void SyncDir::addDir(string dir){
     updateMutex.lock();
-    subDirs[dir.path] = dir;
+    subDirs.insert(dir);
     updateMutex.unlock();
 }
 void SyncDir::rmDir(string dirPath){
@@ -69,9 +43,11 @@ void SyncDir::rmDir(string dirPath){
 }
 
 void SyncDir::updateCycle(){
-    while(updateFlag && !finishFlag){
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        updateFilesAndDirs();
+    while(!finishFlag){
+        if(updateFlag){
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            updateFilesAndDirs();
+        }
     }
 }
 
@@ -83,8 +59,8 @@ void SyncDir::updateFilesAndDirs(){
     updateMutex.unlock();
 }
 
-set<string> SyncDir::getFilesSet(){
-    set<string> keys;
+unordered_set<string> SyncDir::getFilesSet(){
+    unordered_set<string> keys;
     for(pair<string, FileInfo> fileEntry : files){
         keys.insert(fileEntry.first);
     }
@@ -92,9 +68,8 @@ set<string> SyncDir::getFilesSet(){
 }
 
 void SyncDir::searchForNewFiles(){
-    vector<tinydir_file> scanned = getSubFiles(false,
-        directory);
-    set<string> deletedFiles = getFilesSet();
+    vector<tinydir_file> scanned = getSubFiles(directory);
+    unordered_set<string> deletedFiles = getFilesSet();
     for(tinydir_file file : scanned){
         if(files.find(file.path) == files.end()){
             FileInfo info = getFileInfo(file);
@@ -114,15 +89,33 @@ void SyncDir::searchForNewFiles(){
 void SyncDir::updateModTimes(){
     for(pair<string, FileInfo> fileEntry : files){
         time_t lastMod = getLastModTime(fileEntry.first.c_str());
-        fileEntry.second.lastModification = lastMod;
+        if(lastMod > fileEntry.second.lastModification){
+            log("SYNC-DIR", fileEntry.second.path + string(" has been altered: ")
+            + timeToChar(lastMod) + string(" > ") + timeToChar(fileEntry.second.lastModification));
+            files[fileEntry.first].lastModification = lastMod;
+        }else{
+            //log("SYNC-DIR", fileEntry.second.path + string(" remains the same."));
+        }
     }
 }
 
 void SyncDir::updateDirs(){
-    vector<FileInfo> dirInfos = getFileInfoFromDir(true,
-        directory);
-    for(FileInfo info : dirInfos){
-        subDirs[info.path] = info;
+    unordered_set<string> newDirs = getDirs(directory);
+    for(string dir : newDirs){
+        if(subDirs.count(dir) == 0){
+            subDirs.insert(dir);
+            log("SYNC-DIR",string("New folder: ") + dir);
+        }
+    }
+    vector<string> deletedDirs;
+    for(string dir : subDirs){
+        if(newDirs.count(dir) == 0){
+            deletedDirs.push_back(dir);
+            log("SYNC-DIR",string("Removed folder: ") + dir);
+        }
+    }
+    for(string deletedFile : deletedDirs){
+        subDirs.erase(deletedFile);
     }
 }
 

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <set>
+#include <unordered_set>
 #include <map>
 #include <thread>
 #include <mutex>
@@ -25,10 +25,10 @@ public:
 
     void addFile(FileInfo file);
     void rmFile(string filePath);
-    void addDir(FileInfo dir);
+    void addDir(string dir);
     void rmDir(string dirPath);
 
-    set<string> getFilesSet();
+    unordered_set<string> getFilesSet();
 
     void finish();
 
@@ -42,7 +42,7 @@ private:
     string directory;
     bool remote, updateFlag, finishFlag;
     map<string, FileInfo> files;
-    map<string, FileInfo> subDirs;
+    unordered_set<string> subDirs;
 
     mutex updateMutex;
     thread* updatingThread = NULL;

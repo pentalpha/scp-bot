@@ -19,10 +19,8 @@ int main(int argc, char * argv[]){
         int s = stoi(argv[2]);
         log("MAIN", string("Scanning for ") + to_string(s) + "s:");
         std::this_thread::sleep_for(std::chrono::milliseconds(s*1000));
-    }else{
-        cout << "scanning local files:\n";
-        scanLocalFiles();
     }
     return 0;
+    
 }
 
