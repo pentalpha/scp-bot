@@ -70,20 +70,26 @@ vector<tinydir_file> getSubFiles(bool dirs, string dirToScan){
 }
 
 FileInfo getFileInfo(tinydir_file file){
+    struct FileInfo info = getFileInfo(file.path, file.name);
+    return info;
+}
+
+FileInfo getFileInfo(string filePath,
+                    string fileName){
     struct FileInfo info;
-    info.path = file.path;
-    info.name = file.name;
-    info.lastModification = getLastModTime(info.path.c_str());
+    info.path = filePath;
+    info.name = fileName;
+    info.lastModification = getLastModTime(filePath.c_str());
     return info;
 }
 
 vector<FileInfo> getFileInfoFromDir(bool dirs, string dirToScan){
     if(dirs){
-        cout << "Getting subdirs";
+        //cout << "Getting subdirs";
     }else{
         cout << "Getting subfiles";
     }
-    cout << " for " << dirToScan << endl;
+    //cout << " for " << dirToScan << endl;
     vector<tinydir_file> tinyFiles = getSubFiles(dirs, dirToScan);
     //cout << "got them" << endl;
     vector<FileInfo> fileInfos;

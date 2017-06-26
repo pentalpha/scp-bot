@@ -10,20 +10,9 @@
 #include "Socket.h"
 #include "Server.h"
 #include "Client.h"
+#include "FileUtils.h"
 
 using namespace std;
-
-/* All of the information relevant to a file */
-struct FileInfo{
-    //full path - sync dir
-    string path;
-    //name (including extension)
-    string name;
-    //should I even use this?
-    //string extension;
-    //What format to use for the time?
-    //lastModification;
-};
 
 /* Friendly bot that helps synchronizing files and dirs*/
 class SyncBot{
@@ -70,25 +59,6 @@ protected:
     SyncDir localDir, remoteDir;
     string localDirName, ip, remotePassWd;
     Socket *socket = NULL;
-};
-
-//Directory to sync. Can represent the data on the remote too
-class SyncDir{
-public:
-    SyncDir(string dir, bool local = true);
-    something diff(SyncDir* other);
-
-private:
-    void updateFilesAndDirs();
-    void searchForNewFiles();
-    void updateModTimes();
-    void updateDirs();
-
-    bool remote, updateFlag, finishFlag;
-    map<string, FileInfo> files;
-    vector<string> subDirs;
-
-    mutex updateMutex;
 };
 
 #endif

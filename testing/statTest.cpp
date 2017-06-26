@@ -5,15 +5,21 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <vector>
-#include "src/tinydir.h"
-#include "src/FileUtils.h"
+#include <thread>
+#include "../src/tinydir.h"
+#include "../src/FileUtils.h"
+#include "../src/SyncDir.h"
 
 using namespace std;
 
 int main(int argc, char * argv[]){
-    if(argc == 3){
-        compareTwoFiles(argv);
-    }else if (argc == 1){
+    if (argc == 3){
+        string dir(argv[1]);
+        SyncDir syncDir(dir, true);
+        int s = stoi(argv[2]);
+        log("MAIN", string("Scanning for ") + to_string(s) + "s:");
+        std::this_thread::sleep_for(std::chrono::milliseconds(s*1000));
+    }else{
         cout << "scanning local files:\n";
         scanLocalFiles();
     }

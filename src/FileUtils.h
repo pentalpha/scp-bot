@@ -39,6 +39,9 @@ void compareTwoFiles(char * argv[]);
 
 vector<tinydir_file> getSubFiles(bool dirs = false, string dir = "./");
 
+FileInfo getFileInfo(string filePath,
+                    string fileName);
+
 FileInfo getFileInfo(tinydir_file file);
 
 vector<FileInfo> getFileInfoFromDir(bool dirs = false, string dir = "./");
