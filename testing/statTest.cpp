@@ -19,6 +19,11 @@ int main(int argc, char * argv[]){
         int s = stoi(argv[2]);
         log("MAIN", string("Scanning for ") + to_string(s) + "s:");
         std::this_thread::sleep_for(std::chrono::milliseconds(s*1000));
+        vector<string> changes = syncDir.popChanges();
+        for(string change : changes){
+            log("MAIN", string("Change made:\n\t ") + change);
+        }
+        syncDir.finish();
     }
     return 0;
     

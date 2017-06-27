@@ -21,25 +21,21 @@ SyncDir::~SyncDir(){
 }
 
 void SyncDir::addFile(FileInfo file){
-    updateMutex.lock();
+    std::lock_guard<std::mutex> guard(updateMutex);
     files[file.path] = file;
-    updateMutex.unlock();
 }
 
 void SyncDir::rmFile(string filePath){
-    updateMutex.lock();
+    std::lock_guard<std::mutex> guard(updateMutex);
     files.erase(filePath);
-    updateMutex.unlock();
 }
 void SyncDir::addDir(string dir){
-    updateMutex.lock();
+    std::lock_guard<std::mutex> guard(updateMutex);
     subDirs.insert(dir);
-    updateMutex.unlock();
 }
 void SyncDir::rmDir(string dirPath){
-    updateMutex.lock();
+    std::lock_guard<std::mutex> guard(updateMutex);
     subDirs.erase(dirPath);
-    updateMutex.unlock();
 }
 
 void SyncDir::updateCycle(){
@@ -52,11 +48,10 @@ void SyncDir::updateCycle(){
 }
 
 void SyncDir::updateFilesAndDirs(){
-    updateMutex.lock();
+    std::lock_guard<std::mutex> guard(updateMutex);
     updateDirs();
     searchForNewFiles();
     updateModTimes();
-    updateMutex.unlock();
 }
 
 unordered_set<string> SyncDir::getFilesSet(){
@@ -75,6 +70,7 @@ void SyncDir::searchForNewFiles(){
             FileInfo info = getFileInfo(file);
             files[file.path] = info;
             log("SYNC-DIR", string("Added ") + file.path);
+            upFileMsg(file.path);
         }else{
             deletedFiles.erase(file.path);
         }
@@ -82,6 +78,7 @@ void SyncDir::searchForNewFiles(){
     for(string deleted : deletedFiles){
         log("SYNC-DIR", string("Removed ") + deleted);
         files.erase(deleted);
+        rmFileMsg(deleted);
     }
 
 }
@@ -93,6 +90,7 @@ void SyncDir::updateModTimes(){
             log("SYNC-DIR", fileEntry.second.path + string(" has been altered: ")
             + timeToChar(lastMod) + string(" > ") + timeToChar(fileEntry.second.lastModification));
             files[fileEntry.first].lastModification = lastMod;
+            upFileMsg(fileEntry.first);
         }else{
             //log("SYNC-DIR", fileEntry.second.path + string(" remains the same."));
         }
@@ -105,6 +103,7 @@ void SyncDir::updateDirs(){
         if(subDirs.count(dir) == 0){
             subDirs.insert(dir);
             log("SYNC-DIR",string("New folder: ") + dir);
+            upDirMsg(dir);
         }
     }
     vector<string> deletedDirs;
@@ -112,6 +111,7 @@ void SyncDir::updateDirs(){
         if(newDirs.count(dir) == 0){
             deletedDirs.push_back(dir);
             log("SYNC-DIR",string("Removed folder: ") + dir);
+            rmDirMsg(dir);
         }
     }
     for(string deletedFile : deletedDirs){
@@ -125,4 +125,55 @@ SyncDirDiff SyncDir::diff(SyncDir* other){
 
 void SyncDir::finish(){
     finishFlag = true;
+}
+
+bool SyncDir::searchAndEraseElementInListContaining(list<string> &items, string s){
+    bool erased = false;
+    auto i = items.begin();
+    while (i != items.end())
+    {
+        string value = *i;
+        bool isSubStr = (value.find(s) != string::npos);
+        if (isSubStr){
+            i = items.erase(i);
+            break;
+        }else{
+            ++i;
+        }
+    }
+    return erased;
+}
+
+void SyncDir::putChangeMessage(string type, string file, bool fileMsg){
+    std::lock_guard<std::mutex> guard(addMsgMutex);
+    string msg = type + string(" ") + file;
+    if(fileMsg){
+        searchAndEraseElementInListContaining(fileChanges, string("-file ") + file);
+        fileChanges.push_back(msg);
+    }else{
+        searchAndEraseElementInListContaining(dirChanges, string("-dir ") + file);
+        dirChanges.push_back(msg);
+    }
+}
+
+vector<string> SyncDir::popChanges(){
+    std::lock_guard<std::mutex> guard(addMsgMutex);
+    vector<string> changes;
+    auto i = dirChanges.begin();
+    while(i != dirChanges.end()){
+        string value = *i;
+        changes.push_back(value);
+        i++;
+    }
+    auto j = fileChanges.begin();
+    while(j != fileChanges.end()){
+        string value = *j;
+        changes.push_back(value);
+        j++;
+    }
+
+    dirChanges.clear();
+    fileChanges.clear();
+
+    return changes;
 }

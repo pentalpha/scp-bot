@@ -8,6 +8,8 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <queue>
+#include <list>
 #include "FileUtils.h"
 #include "logging.h"
 
@@ -32,6 +34,7 @@ public:
 
     void finish();
 
+    vector<string> popChanges();
 private:
     void updateCycle();
     void updateFilesAndDirs();
@@ -44,8 +47,37 @@ private:
     map<string, FileInfo> files;
     unordered_set<string> subDirs;
 
-    mutex updateMutex;
+    mutex updateMutex, addMsgMutex;
     thread* updatingThread = NULL;
+
+    inline void upFileMsg(string file){
+        putChangeMessage("up-file", file, true);
+    }
+    inline void rmFileMsg(string file){
+        putChangeMessage("rm-file", file, true);
+    }
+    inline void upDirMsg(string dir){
+        putChangeMessage("up-dir", dir, false);
+    }
+    inline void rmDirMsg(string dir){
+        putChangeMessage("rm-dir", dir, false);
+    }
+    static bool searchAndEraseElementInListContaining(list<string> &items, string s);
+    void putChangeMessage(string type, string file, bool fileMsg);
+    
+    list<string> fileChanges, dirChanges;
 };
+
+/*
+Change messages catalogue:
+up-file [file-path]:
+    file created or modified
+rm-file [file-path]:
+    file removed
+up-dir [dir-path]:
+    dir created
+rm-dir [dir-path]:
+    dir removed
+*/
 
 #endif
