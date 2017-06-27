@@ -9,6 +9,11 @@
 #include <fcntl.h>
 #include <vector>
 #include <unordered_set>
+
+#include <stdlib.h> 
+#include <stdio.h> 
+#include <linux/limits.h>
+
 #include "../lib/tinydir.h"
 
 using namespace std;
@@ -48,5 +53,7 @@ FileInfo getFileInfo(tinydir_file file);
 //unordered_set<FileInfo> getFileInfoFromDir(bool dirs = false, string dir = "./");
 unordered_set<string> getDirs(string dirToScan = "./");
 //void scanLocalFiles();
+
+string getAbsolutePath(string hint = "./");
 
 #endif

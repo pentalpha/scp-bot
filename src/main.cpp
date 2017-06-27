@@ -13,7 +13,9 @@ using namespace std;
 
 int main(int argc, char * argv[]){
     OctoSyncArgs args(argc, argv);
-
+    if(args.success){
+        
+    }
     /*if(argc == 4){
         string op(argv[1]);
         string ip(argv[2]);

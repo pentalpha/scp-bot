@@ -12,8 +12,16 @@
 #include "Client.h"
 #include "FileUtils.h"
 #include "SyncDir.h"
+#include "OctoSyncArgs.h"
 
 using namespace std;
+
+enum SyncBotState{
+    SLEEP = 0,
+    WAITING = 1,
+    AUTH = 2,
+    SYNC = 3
+};
 
 /* Friendly bot that helps synchronizing files and dirs*/
 class SyncBot{
@@ -24,13 +32,16 @@ public:
     port = hosting machine port
     server = True if hosting, False if only sync
     passwd = hosting machine passwd, necessary if not a host*/
-    SyncBot(string dir, string ip, int port, bool server = true, string passwd = "");
+    //SyncBot(string dir, string ip, int port, bool server = true, string passwd = "");
+
+    //Start SyncBot using parsed command line args
+    SyncBot(OctoSyncArgs args);
 
     //start sync process, blocking
     bool startSync();
 protected:
     //returns pointer to Client or Server
-    Socket* makeSocket(string ip, int port, bool server);
+    static Socket* makeSocket(string ip, int port, bool server);
 
     //Tryes to get differences 
     //void lookForDiffs();
@@ -58,10 +69,18 @@ protected:
     bool isServer;
     //receiving update from remote / sending update to remote
     bool remoteUpdating, localUpdating;
-    int port;
+    //port for local socket
+    int hostPort;
+    string hostAddress;
+    string hostPasswd;
+
     SyncDir localDir, remoteDir;
-    string localDirName, ip, remotePassWd;
+
+    string localDirName
+    string localPasswd, remotePasswd;
+
     Socket *socket = NULL;
+    SyncBotState state;
 };
 
 #endif

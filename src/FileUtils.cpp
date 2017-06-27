@@ -166,6 +166,12 @@ unordered_set<string> getDirs(string dirToScan){
     return dirs;
 }
 
+string getAbsolutePath(string hint){
+    char absPath[PATH_MAX];
+    realpath(hint.c_str(), absPath);
+    return string(absPath);
+}
+
 /*void scanLocalFiles(){
     auto localFiles = getFileInfoFromDir();
     cout << "Local files:\n";
