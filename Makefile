@@ -7,4 +7,4 @@ all:
 		src/run.cpp src/FileUtils.cpp \
 		src/ArgParser.cpp src/OctoSyncArgs.cpp \
 		src/SyncDir.cpp \
-		-lncurses -pthread
+		-pthread

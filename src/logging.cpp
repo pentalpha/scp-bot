@@ -4,7 +4,7 @@ std::mutex loggingMutex;
 
 void log(std::string origin, std::string message){
     loggingMutex.lock();
-    std::cout << "[" << origin << "] " << message << std::endl;
+    std::clog << "[" << origin << "] " << message << std::endl;
     loggingMutex.unlock();
 }
 

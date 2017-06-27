@@ -1,8 +1,10 @@
 #ifndef _OCTO_SYNC_ARGS_
 #define _OCTO_SYNC_ARGS_
 
-#include <ncurses.h>
 #include <fstream>
+#include <stdio.h>
+#include <unistd.h>   //_getch*/
+#include <termios.h>  //_getch*/
 #include "ArgParser.h"
 #include "FileUtils.h"
 
@@ -24,10 +26,10 @@ public:
     bool sync = false;
     bool host = false;
     string syncDir = "./";
-    string hostAddress = "";
-    string localPasswd = "";
+    string hostAddress = "none";
+    string localPasswd = "none";
     int hostPort = DEFAULT_HOST_PORT;
-    string hostPasswd = "";
+    string hostPasswd = "none";
     int scpPort = -1;
 
     static const string syncCmdArgName;

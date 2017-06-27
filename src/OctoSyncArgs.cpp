@@ -52,7 +52,6 @@ void OctoSyncArgs::readValuesFromConfigFile(){
             host = (bool)isHost;
             inputStream >> syncDir;
             inputStream >> hostAddress;
-            inputStream >> hostPort;
             inputStream >> localPasswd;
             inputStream >> hostPasswd;
             inputStream >> hostPort;
@@ -77,7 +76,6 @@ void OctoSyncArgs::writeValuesToConfigFile(){
         outputStream << (int)host << endl;
         outputStream << syncDir << endl;
         outputStream << hostAddress << endl;
-        outputStream << hostPort << endl;
         outputStream << localPasswd << endl;
         outputStream << hostPasswd << endl;
         outputStream << hostPort << endl;
@@ -112,17 +110,18 @@ bool OctoSyncArgs::findArgs(){
 }
 
 bool OctoSyncArgs::validateArgs(){
-    if(syncDir == ""){
+    /*if(syncDir == ""){
         log("OCTO-SYNC-ARGS", string("No synchronization directory defined"));
         return false;
-    }
-    if(hostAddress == ""){
+    }*/
+    if(hostAddress == "none"){
         log("OCTO-SYNC-ARGS", string("No host address defined"));
         return false;
     }
-    if(localPasswd == ""){
+    if(localPasswd == "none"){
         cout << "Enter user password: ";
         string passwd = getSecretString();
+        cout << endl;
         if(passwd != ""){
             localPasswd = passwd;
         }else{
@@ -130,10 +129,11 @@ bool OctoSyncArgs::validateArgs(){
             return false;
         }
     }
-    if(hostPasswd == ""){
+    if(hostPasswd == "none"){
         if(sync){
             cout << "Enter host password: ";
             string passwd = getSecretString();
+            cout << endl;
             if(passwd != ""){
                 hostPasswd = passwd;
             }else{
@@ -159,16 +159,16 @@ void OctoSyncArgs::printGivenArgs(){
         cout << "HOST";
     }
     cout << " operation;" << endl;
-    if(syncDir != ""){
+    if(syncDir != "./"){
         cout << "Synchronization directory: \n\t" << syncDir << endl; 
     }
-    if(hostAddress != ""){
+    if(hostAddress != "none"){
         cout << "Host address: \n\t" << hostAddress << endl; 
     }
-    if(localPasswd != ""){
+    if(localPasswd != "none"){
         cout << "Local password: \n\t" << localPasswd << endl; 
     }
-    if(hostPasswd != ""){
+    if(hostPasswd != "none"){
         cout << "Host password: \n\t" << hostPasswd << endl; 
     }
     if(hostPort != -1){
@@ -200,18 +200,43 @@ void OctoSyncArgs::printHelp(){
     << "\t" << "Specify a port for the scp command" << endl;
 }
 
+char getch(){
+    /*#include <unistd.h>   //_getch*/
+    /*#include <termios.h>  //_getch*/
+    char buf=0;
+    struct termios old={0};
+    fflush(stdout);
+    if(tcgetattr(0, &old)<0)
+    	perror("tcsetattr()");
+    old.c_lflag&=~ICANON;
+    old.c_lflag&=~ECHO;
+    old.c_cc[VMIN]=1;
+    old.c_cc[VTIME]=0;
+    if(tcsetattr(0, TCSANOW, &old)<0)
+    	perror("tcsetattr ICANON");
+    if(read(0,&buf,1)<0)
+    	perror("read()");
+    old.c_lflag|=ICANON;
+    old.c_lflag|=ECHO;
+    if(tcsetattr(0, TCSADRAIN, &old)<0)
+    	perror ("tcsetattr ~ICANON");
+    //printf("%c\n",buf);
+    return buf;
+}
+
 string OctoSyncArgs::getSecretString(){
+    //initscr();
     string passwd = "";
     char tempchar[2] = "";  // Temporary character array 
-    char key;  // Holds the key number 
-    key = getch();
-    while(key != 13 /*Enter*/)  
+    int key;  // Holds the key number 
+    key = (int)getch();
+    while(key != 10 /*Enter*/)  
     {
-        if (key == 8  && passwd.length() > 0) {/*Backspace*/
+        if (key == 127  && passwd.length() > 0) {/*Backspace*/
             passwd = passwd.substr(0, passwd.length()-1);
         }else{
-            tempchar[0] = key; // Copy the char to an array 
-            tempchar[1] = 0; // with a null at the end
+            tempchar[0] = (char)key; // Copy the char to an array 
+            tempchar[1] = (char)0; // with a null at the end
             passwd = passwd + string(tempchar);
         }
         key = getch();  // Grab a character  
