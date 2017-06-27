@@ -1,17 +1,20 @@
 #include <iostream>
 #include <string>
-#include "Server.h"
-#include "Client.h"
-#include "logging.h"
-#include "run.h"
+//#include "Server.h"
+//#include "Client.h"
+//#include "logging.h"
+//#include "run.h"
+#include "OctoSyncArgs.h"
 
 using namespace std;
 
-void startServer(string ip, int port);
-void startClient(string ip, int port);
+//void startServer(string ip, int port);
+//void startClient(string ip, int port);
 
 int main(int argc, char * argv[]){
-    if(argc == 4){
+    OctoSyncArgs args(argc, argv);
+
+    /*if(argc == 4){
         string op(argv[1]);
         string ip(argv[2]);
         int port = stoi(argv[3]);
@@ -26,28 +29,21 @@ int main(int argc, char * argv[]){
             log("ARGS", "Invalid operation:");
             log("ARGS", op);
         }
-    }
+    }*/
     
 }
 
-void startServer(string ip, int port){
+/*void startServer(string ip, int port){
     Server server(ip.c_str(), port);
     server.startTransaction();
     cout << "Started\n";
     server.waitToFinish();
-    /*server.startWaiting();
-    while(server.isWaiting()){
-
-    }
-    while(server.isConnected()){
-
-    }*/
     log("MAIN", "Server not connected anymore");
     //server.stop();
-}
+}*/
 
-void startClient(string ip, int port){
+/*void startClient(string ip, int port){
     Client client(ip, port);
     client.startTransaction();
     client.waitToFinish();
-}
+}*/

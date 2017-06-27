@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <vector>
 #include <unordered_set>
-#include "tinydir.h"
+#include "../lib/tinydir.h"
 
 using namespace std;
 

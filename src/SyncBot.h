@@ -11,6 +11,7 @@
 #include "Server.h"
 #include "Client.h"
 #include "FileUtils.h"
+#include "SyncDir.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ protected:
     Socket* makeSocket(string ip, int port, bool server);
 
     //Tryes to get differences 
-    void lookForDiffs();
+    //void lookForDiffs();
 
     //Sync all info
     void syncInfo();
@@ -48,7 +49,9 @@ protected:
     //Calls scp to send changes
     void sendChangesToRemote();
     //Notifies remote that a update is on the way
-    bool sendStartingUpdate();
+    bool sendRequireUpdate();
+    //Notifies the remote that it can start updating
+    bool sendAllowUpdate();
     //Notifies remote that the update is finished
     bool sendFinishedUpdate();
     

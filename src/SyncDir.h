@@ -21,6 +21,7 @@ struct SyncDirDiff{
 //Directory to sync. Can represent the data on the remote too
 class SyncDir{
 public:
+    const int autoUpdateDelayMS = 500;
     SyncDir(string dir, bool local = true);
     ~SyncDir();
     static SyncDirDiff diff(SyncDir* other);
@@ -32,6 +33,9 @@ public:
 
     unordered_set<string> getFilesSet();
 
+    bool isUpdating();
+    void stopUpdating();
+    void resumeUpdating();
     void finish();
 
     vector<string> popChanges();
@@ -43,7 +47,7 @@ private:
     void updateDirs();
 
     string directory;
-    bool remote, updateFlag, finishFlag;
+    bool remote, updateFlag, finishFlag, updatingFlag;
     map<string, FileInfo> files;
     unordered_set<string> subDirs;
 

@@ -3,17 +3,18 @@
 SyncDir::SyncDir(string dir, bool local){
     updateFlag = local;
     finishFlag = false;
+    updatingFlag = false;
     remote = !local;
     directory = dir;
-    if(updateFlag){
-        updateFilesAndDirs();
+    if(!remote){
+        //updateFilesAndDirs();
         updatingThread = new thread(&SyncDir::updateCycle, this);
         updatingThread->detach();
     }
 }
 
 SyncDir::~SyncDir(){
-    if(updateFlag || remote){
+    if(updateFlag || updatingFlag || remote){
         finishFlag = true;
         updatingThread->join();
         delete updatingThread;
@@ -38,11 +39,28 @@ void SyncDir::rmDir(string dirPath){
     subDirs.erase(dirPath);
 }
 
+bool SyncDir::isUpdating(){
+    return updatingFlag;
+}
+
+void SyncDir::stopUpdating(){
+    updateFlag = false;
+    while(updatingFlag){
+
+    }
+}
+
+void SyncDir::resumeUpdating(){
+    updateFlag = true;
+}
+
 void SyncDir::updateCycle(){
     while(!finishFlag){
         if(updateFlag){
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            updatingFlag = true;
             updateFilesAndDirs();
+            updatingFlag = false;
+            std::this_thread::sleep_for(std::chrono::milliseconds(autoUpdateDelayMS));
         }
     }
 }
