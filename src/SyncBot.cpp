@@ -228,7 +228,7 @@ bool SyncBot::hasRemoteAuthorization(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::sync(){
-    if(remoteUpdating){
+    if(!remoteUpdating){
         if(localDir.hasChanges()){
             vector<string> changes = localDir.popChanges();
             for(string change : changes){
