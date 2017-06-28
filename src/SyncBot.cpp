@@ -259,8 +259,8 @@ void SyncBot::sendChangeMsg(string change){
             sendDirRemove(obj);
         }
     }else{
-        time_t lastMod = localDir.getModTimeOfFile(obj);
         if(up){
+            time_t lastMod = localDir.getModTimeOfFile(obj);
             sendFileAdd(obj, lastMod);
         }else{
             sendFileRemove(obj);
