@@ -352,7 +352,7 @@ void SyncBot::sendFile(string localFile, string remoteFile){
     string cmd = "sshpass -p '";
     cmd += remotePasswd + string("' scp -p ");
     if(remoteScpPort > 0){
-        cmd += string("-P ") + to_string(remoteScpPort);
+        cmd += string("-P ") + to_string(remoteScpPort) + string(" ");
     }
     cmd += localFile + string(" ");
     cmd += remoteUserName + string("@") + remoteAddress;
@@ -394,6 +394,10 @@ void SyncBot::treatMessage(string message){
             remoteEndSync();
         }else if(op == "login" && words.size() == 1){
             login(words.front());
+        }else if(op == "mkdir" && words.size() == 1){
+            mkdir(message, words.back());
+        }else if(op == "rm" && words.size() == 2){
+            erase(message, words.back());
         }else if(op == "dir" && words.size() == 2){
             dir(words.front(), words.back());
         }else if(op == "file" && words.size() >= 2){
@@ -409,10 +413,6 @@ void SyncBot::treatMessage(string message){
             }else if (action == "rm"){
                 fileRemove(fileName);
             }
-        }else if(op == "mkdir" && words.size() == 2){
-            mkdir(message, words.back());
-        }else if(op == "rm" && words.size() == 3){
-            erase(message, words.back());
         }else if(op == "auth" && words.size() >= 3){
             auto it = words.begin();
             string userPassword = *it;
