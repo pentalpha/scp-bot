@@ -79,6 +79,7 @@ protected:
     void sendFileRemove(string file);
     void sendFileAdd(string file, time_t lastMod);
     void sendStartSync();
+    void sendAllowSync();
     void sendEndSync();
     void sendDeleteFile(string file);
     void sendFile(string localFile, string remoteFile);
@@ -113,6 +114,7 @@ protected:
     void fileUp(string file, time_t lastMod);
     void fileRemove(string file);
     void remoteStartSync();
+    void allowedToSync();
     void remoteEndSync();
     void mkdir(string message, string dir);
     void erase(string message, string obj);
@@ -145,6 +147,7 @@ protected:
 
     bool finishFlag;
     bool authByRemote;
+    bool syncAllowdByRemote;
 /*Message dialog:
     Auth message:
         auth [local password] [local sync dir] [scpPort]
@@ -161,6 +164,8 @@ protected:
         file rm [file-name]
     Init micro-sync:
         start-sync
+    Sync allowed:
+        allow-sync
     End micro-sync:
         end-sync
     Make a directory:

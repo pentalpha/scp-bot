@@ -25,7 +25,8 @@ SyncBot::SyncBot(OctoSyncArgs args)
         scpPort = args.scpPort;
     }
 
-    remoteUpdating = localUpdating = authByRemote = false;
+    remoteUpdating = localUpdating = false;
+    syncAllowdByRemote = authByRemote = false;
 
     socket = makeSocket(hostAddress, hostPort, isServer);
     if(socket == NULL){
@@ -227,21 +228,29 @@ bool SyncBot::hasRemoteAuthorization(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::sync(){
-    if(localDir.hasChanges()){
-        vector<string> changes = localDir.popChanges();
-        for(string change : changes){
+    if(remoteUpdating){
+        if(localDir.hasChanges()){
+            vector<string> changes = localDir.popChanges();
+            for(string change : changes){
+                while(remoteUpdating){
+                    //wait remote to end his update
+                }
+                sendStartSync();
+                while(!syncAllowdByRemote){
+
+                }
+                sendChangeMsg(change);
+                syncAllowdByRemote = false;
+                sendEndSync();
+            }
+        }else{
             while(remoteUpdating){
                 //wait remote to end his update
             }
-            sendStartSync();
-            sendChangeMsg(change);
-            sendEndSync();
+            localUpdating = true;
+            updateLocalDirIfNotBusy();
+            localUpdating = false;
         }
-    }else{
-        while(remoteUpdating){
-            //wait remote to end his update
-        }
-        updateLocalDirIfNotBusy();
     }
 }
 
@@ -296,7 +305,7 @@ void SyncBot::sendChangeMsg(string change){
                 send = true;
             }else{
                 time_t remoteLastMod = remoteDir.getModTimeOfFile(remotePathObj);
-                if(remoteLastMod < lastMod){
+                if(lastMod > remoteLastMod + 2){
                     send = true;
                 }
             }
@@ -332,6 +341,11 @@ void SyncBot::sendStartSync(){
     localUpdating = true;
     socket->sendMsg("start-sync");
     
+}
+
+void SyncBot::sendAllowSync(){
+    remoteUpdating = true;
+    socket->sendMsg("allow-sync");
 }
 
 void SyncBot::sendEndSync(){
@@ -455,7 +469,7 @@ void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, i
 }
 
 void SyncBot::dir(string op, string dir){
-    //log("SYNC-BOT", string("Treating: dir ") + op + string(" ") + dir);
+    //log("SYNC-BOT", string("Adding directory ") + op + string(" ") + dir);
     if(op == "add"){
         remoteDir.addDir(dir);
     }else if(op == "rm"){
@@ -464,7 +478,8 @@ void SyncBot::dir(string op, string dir){
 }
 
 void SyncBot::fileUp(string file, time_t lastMod){
-    //log("SYNC-BOT", string("Treating: file up ") + file + string(" ") + timeToChar(lastMod));
+    log("SYNC-BOT", string("Updating file to remote SyncDir: ") 
+        + file + string(" ") + timeToChar(lastMod));
     FileInfo info;
     info.path = file;
     info.lastModification = lastMod;
@@ -472,17 +487,26 @@ void SyncBot::fileUp(string file, time_t lastMod){
 }
 
 void SyncBot::fileRemove(string file){
-    //log("SYNC-BOT", string("Treating: file rm ") + file);
+    log("SYNC-BOT", string("Removing file from remote SyncDir: ") + file);
     remoteDir.rmFile(file);
 }
 
 void SyncBot::remoteStartSync(){
-    log("SYNC-BOT", string("Treating: remoteStartSync()"));
-    remoteUpdating = true;
+    log("SYNC-BOT", string("Remote requires to start sync"));
+    //remoteUpdating = true;
+    while(localUpdating){
+        //wait to finish update local
+    }
+    sendAllowSync();
+}
+
+void SyncBot::allowedToSync(){
+    log("SYNC-BOT", string("Allowed to do sync"));
+    syncAllowdByRemote = true;
 }
 
 void SyncBot::remoteEndSync(){
-    log("SYNC-BOT", string("Treating: remoteEndSync()"));
+    log("SYNC-BOT", string("Remote ending sync"));
     remoteUpdating = false;
 }
 
