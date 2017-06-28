@@ -117,32 +117,33 @@ void SyncBot::authentication(){
         if(isServer && someoneTryedToLogin()){
             //log("SYNC-BOT", "Someone tryed to login on server");
             if(correctServerPassword()){
-                log("SYNC-BOT", "Sync client logged in to server");
+                log("SYNC-BOT-HOST", "Sync client logged in to server");
                 bool sent = sendAuthMessage();
                 if(sent){
                     authState = WAITING_REMOTE_AUTH;
-                    log("SYNC-BOT", "SyncBot is now WAITING_REMOTE_AUTH");
+                    log("SYNC-BOT-HOST", "SyncBot is now WAITING_REMOTE_AUTH");
                 }
             }else{
-                log("SYNC-BOT", "Sync client tryed to login with incorrect password");
+                log("SYNC-BOT-HOST", "Sync client tryed to login with incorrect password");
             }
         }else if(!isServer){
             bool sent = sendLoginMessage();
             if(sent){
                 authState = WAITING_REMOTE_AUTH;
-                log("SYNC-BOT", "SyncBot is now WAITING_REMOTE_AUTH");
+                log("SYNC-BOT-CLIENT", "SyncBot is now WAITING_REMOTE_AUTH");
             }
         }
     }else if (authState == WAITING_REMOTE_AUTH){
         if(hasRemoteAuthorization()){
-            authState = AUTHORIZED;
-            log("SYNC-BOT", "SyncBot is now AUTHORIZED");
             if(!isServer){
                 bool sent = sendAuthMessage();
                 if(sent){
                     authState = AUTHORIZED;
-                    log("SYNC-BOT", "SyncBot is now AUTHORIZED");
+                    log("SYNC-BOT-CLIENT", "SyncBot is now AUTHORIZED");
                 }
+            }else{
+                authState = AUTHORIZED;
+                log("SYNC-BOT-HOST", "SyncBot is now AUTHORIZED");
             }
         }
     }else if(authState == AUTHORIZED){
@@ -270,4 +271,5 @@ void SyncBot::auth(string userPassword, string remoteSyncDir, int transferPort){
     remotePasswd = userPassword;
     remoteDir.setDir(remoteSyncDir);
     authByRemote = true;
+    log("SYNC-BOT", "Treated auth and authorized");
 }
