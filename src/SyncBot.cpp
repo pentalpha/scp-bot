@@ -78,7 +78,7 @@ bool SyncBot::run(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::updateCycle(){
-    log("SYNC-BOT", "Starting to update");
+    //log("SYNC-BOT", "Starting to update");
     while(!finishFlag){
         update();
     }
@@ -119,7 +119,7 @@ void SyncBot::waiting(){
         state = AUTH;
         log("SYNC-BOT", "SyncBot is now in AUTH");
         authState = NOT_STARTED;
-        log("SYNC-BOT", "SyncBot has NOT_STARTED AUTH");
+        //log("SYNC-BOT", "SyncBot has NOT_STARTED AUTH");
     }else{
         //cout << "not connected\n";
         updateLocalDirIfNotBusy();
@@ -348,12 +348,12 @@ void SyncBot::treatMessage(string message){
 
 void SyncBot::login(string password){
     std::lock_guard<std::mutex> guard(loginMutex);
-    log("SYNC-BOT", string("Treating: login ") + password);
+    //log("SYNC-BOT", string("Treating: login ") + password);
     hostPasswdTry = password;
 }
 
 void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, int transferPort){
-    log("SYNC-BOT", string("Treating: auth ") + userPassword + string(" ") + remoteSyncDir);
+    //log("SYNC-BOT", string("Treating: auth ") + userPassword + string(" ") + remoteSyncDir);
     if(transferPort > 0){
         remoteScpPort = transferPort;
     }
@@ -366,7 +366,7 @@ void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, i
 }
 
 void SyncBot::dir(string op, string dir){
-    log("SYNC-BOT", string("Treating: dir ") + op + string(" ") + dir);
+    //log("SYNC-BOT", string("Treating: dir ") + op + string(" ") + dir);
     if(op == "add"){
         remoteDir.addDir(dir);
     }else if(op == "rm"){
@@ -375,7 +375,7 @@ void SyncBot::dir(string op, string dir){
 }
 
 void SyncBot::fileUp(string file, time_t lastMod){
-    log("SYNC-BOT", string("Treating: file up ") + file + string(" ") + timeToChar(lastMod));
+    //log("SYNC-BOT", string("Treating: file up ") + file + string(" ") + timeToChar(lastMod));
     FileInfo info;
     info.path = file;
     info.lastModification = lastMod;
@@ -383,6 +383,6 @@ void SyncBot::fileUp(string file, time_t lastMod){
 }
 
 void SyncBot::fileRemove(string file){
-    log("SYNC-BOT", string("Treating: file rm ") + file);
+    //log("SYNC-BOT", string("Treating: file rm ") + file);
     remoteDir.rmFile(file);
 }
