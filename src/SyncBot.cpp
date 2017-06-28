@@ -113,7 +113,9 @@ void SyncBot::sleeping(){
         state = WAITING;
         log("SYNC-BOT", "SyncBot is now WAITING");
     }else{
+        localUpdating = true;
         updateLocalDirIfNotBusy();
+        localUpdating = false;
     }
 }
 
@@ -133,7 +135,9 @@ void SyncBot::waiting(){
         //log("SYNC-BOT", "SyncBot has NOT_STARTED AUTH");
     }else{
         //cout << "not connected\n";
+        localUpdating = true;
         updateLocalDirIfNotBusy();
+        localUpdating = false;
     }
 }
 
@@ -230,10 +234,17 @@ bool SyncBot::hasRemoteAuthorization(){
 
 void SyncBot::sync(){
     if(!remoteUpdating){
+        while(remoteUpdating){
+            //wait remote to end his update
+        }
+        localUpdating = true;
+        updateLocalDirIfNotBusy();
+        localUpdating = false;
         if(localDir.hasChanges()){
-            vector<string> changes = localDir.popChanges();
-            while(changes.size() > 0){
-                string change = changes[changes.size()-1];
+            string change = localDir.nextChange();
+            if(change != ""){
+                log("SYNC-BOT", string("Going try sync: ") 
+                    + change);
                 while(remoteUpdating){
                     //wait remote to end his update
                 }
@@ -244,16 +255,12 @@ void SyncBot::sync(){
                 if(syncAllowState == ALLOWED){
                     sendChangeMsg(change);
                     sendEndSync();
-                    changes.pop_back();
+                    localDir.popNextChange();
+                }else{
+                    localUpdating = false;
+                    syncAllowState = WAIT;
                 }
             }
-        }else{
-            while(remoteUpdating){
-                //wait remote to end his update
-            }
-            localUpdating = true;
-            updateLocalDirIfNotBusy();
-            localUpdating = false;
         }
     }
 }
@@ -345,7 +352,6 @@ void SyncBot::sendStartSync(){
     localUpdating = true;
     syncAllowState = WAIT;
     socket->sendMsg("start-sync");
-    
 }
 
 void SyncBot::sendAllowSync(){

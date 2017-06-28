@@ -254,6 +254,28 @@ vector<string> SyncDir::popChanges(){
     return changes;
 }
 
+string SyncDir::nextChange(){
+    std::lock_guard<std::mutex> guard(addMsgMutex);
+
+    if(dirChanges.size() > 0){
+        return *dirChanges.begin();
+    }else if(fileChanges.size() > 0){
+        return *fileChanges.begin();
+    }else{
+        return "";
+    }
+}
+
+void SyncDir::popNextChange(){
+    std::lock_guard<std::mutex> guard(addMsgMutex);
+
+    if(dirChanges.size() > 0){
+        dirChanges.pop_front();
+    }else if(fileChanges.size() > 0){
+        fileChanges.pop_front();
+    }
+}
+
 bool SyncDir::hasChanges(){
     return ((dirChanges.size() + fileChanges.size()) > 0);
 }

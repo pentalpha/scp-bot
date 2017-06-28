@@ -43,6 +43,8 @@ public:
     void finish();
 
     vector<string> popChanges();
+    string nextChange();
+    void popNextChange();
     bool hasChanges();
 
     string getFilePathWithoutSyncDir(string filePath);
