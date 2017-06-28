@@ -172,7 +172,7 @@ bool SyncBot::sendLoginMessage(){
     msg += "login ";
     msg += hostPasswd;
     msg += "\n";
-    log("SYNC-BOT", string("Trying to send login message: ") + msg);
+    //log("SYNC-BOT", string("Trying to send login message: ") + msg);
     return socket->sendMsg(msg);
 }
 
@@ -187,7 +187,7 @@ bool SyncBot::sendAuthMessage(){
         msg += to_string(scpPort);
     }
     msg += "\n";
-    log("SYNC-BOT", string("Trying to send auth message: ") + msg);
+    //log("SYNC-BOT", string("Trying to send auth message: ") + msg);
     return socket->sendMsg(msg);
 }
 
@@ -271,5 +271,5 @@ void SyncBot::auth(string userPassword, string remoteSyncDir, int transferPort){
     remotePasswd = userPassword;
     remoteDir.setDir(remoteSyncDir);
     authByRemote = true;
-    log("SYNC-BOT", "Treated auth and authorized");
+    //log("SYNC-BOT", "Treated auth and authorized");
 }
