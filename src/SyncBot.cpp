@@ -17,7 +17,7 @@ SyncBot::SyncBot(OctoSyncArgs args)
         scpPort = args.scpPort;
     }
 
-    remoteUpdating = localUpdating = false;
+    remoteUpdating = localUpdating = authByRemote = false;
 
     socket = makeSocket(hostAddress, hostPort, isServer);
     if(socket == NULL){
