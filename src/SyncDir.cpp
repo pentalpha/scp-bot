@@ -40,6 +40,28 @@ time_t SyncDir::getModTimeOfFile(string filePath){
     return files[filePath].lastModification;
 }
 
+string SyncDir::getFilePathWithoutSyncDir(string filePath)
+{
+    if(filePath.find(directory) != string::npos){
+        string subPath = filePath.substr(directory.length(),
+                                        filePath.length());
+        if(subPath[0] == '/'){
+            subPath = subPath.substr(1, subPath.length());
+            return subPath;
+        }
+    }
+    return "";
+}
+
+bool SyncDir::hasDir(string dir){
+    return (subDirs.find(dir) != subDirs.end());
+}
+
+bool SyncDir::hasFile(string file){
+    return (files.find(file) != files.end());
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 

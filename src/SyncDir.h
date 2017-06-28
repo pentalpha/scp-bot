@@ -44,6 +44,11 @@ public:
 
     vector<string> popChanges();
     bool hasChanges();
+
+    string getFilePathWithoutSyncDir(string filePath);
+    
+    bool hasDir(string dir);
+    bool hasFile(string file);
     time_t getModTimeOfFile(string filePath);
 private:
     void updateCycle();

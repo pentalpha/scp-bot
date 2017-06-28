@@ -55,6 +55,7 @@ public:
   bool isWaiting();
   bool isBinded();
   bool sendMsg(std::string str);
+  std::string clientAddress;
 protected:
   int waitForClient();
   bool doBind();

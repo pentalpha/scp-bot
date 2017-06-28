@@ -15,6 +15,11 @@ SyncBot::SyncBot(OctoSyncArgs args)
     remotePasswd = "";
     localUserName = getUserName();
     remoteUserName = "";
+    if(!isServer){
+        remoteAddress = hostAddress;
+    }else{
+        remoteAddress = "0.0.0.0";
+    }
     //cout << "user name " << localUserName << endl;
     if(args.scpPort != -1){
         scpPort = args.scpPort;
@@ -119,6 +124,10 @@ void SyncBot::waiting(){
         state = AUTH;
         log("SYNC-BOT", "SyncBot is now in AUTH");
         authState = NOT_STARTED;
+        if(isServer){
+            remoteAddress = ((Server*)socket)->clientAddress;
+            log("SYNC-BOT", string("Remote address is ") + remoteAddress);
+        }
         //log("SYNC-BOT", "SyncBot has NOT_STARTED AUTH");
     }else{
         //cout << "not connected\n";
@@ -229,6 +238,9 @@ void SyncBot::sync(){
             sendEndSync();
         }
     }else{
+        while(remoteUpdating){
+            //wait remote to end his update
+        }
         updateLocalDirIfNotBusy();
     }
 }
@@ -257,18 +269,45 @@ void SyncBot::sendChangeMsg(string change){
         file = false;
     }
     string obj = words.back();
+    string noSyncDirObj = localDir.getFilePathWithoutSyncDir(obj);
+    string remotePathObj = remoteDirName;
+    if(remoteDirName[remoteDirName.length()-1] != '/'){
+        remotePathObj += "/";
+    }
+    remotePathObj += noSyncDirObj;
     if(!file){
         if(up){
             sendDirAdd(obj);
+            if(!remoteDir.hasDir(remotePathObj)){
+                sendMkdir(remotePathObj);
+            }
         }else{
             sendDirRemove(obj);
+            if(remoteDir.hasDir(remotePathObj)){
+                sendDeleteDir(remotePathObj);
+            }
         }
     }else{
         if(up){
             time_t lastMod = localDir.getModTimeOfFile(obj);
             sendFileAdd(obj, lastMod);
+            bool send = false;
+            if(!remoteDir.hasFile(remotePathObj)){
+                send = true;
+            }else{
+                time_t remoteLastMod = remoteDir.getModTimeOfFile(remotePathObj);
+                if(remoteLastMod < lastMod){
+                    send = true;
+                }
+            }
+            if(send){
+                sendFile(obj, remotePathObj);
+            }
         }else{
             sendFileRemove(obj);
+            if(remoteDir.hasFile(remotePathObj)){
+                sendDeleteFile(remotePathObj);
+            }
         }
     }
 }
@@ -300,6 +339,33 @@ void SyncBot::sendEndSync(){
     socket->sendMsg("end-sync");
 }
 
+void SyncBot::sendMkdir(string dir){
+    socket->sendMsg(string("mkdir ") + dir);
+}
+
+void SyncBot::sendDeleteDir(string dir){
+    socket->sendMsg(string("rm -Rf ") + dir);
+}
+
+void SyncBot::sendFile(string localFile, string remoteFile){
+    //socket->sendMsg(string("mkdir ") + dir);
+    string cmd = "sshpass -p '";
+    cmd += remotePasswd + string("' scp -p ");
+    if(remoteScpPort > 0){
+        cmd += string("-P ") + to_string(remoteScpPort);
+    }
+    cmd += localFile + string(" ");
+    cmd += remoteUserName + string("@") + remoteAddress;
+    cmd += string(":") + remoteFile;
+    log("SYNC-BOT", string("Transfering with: ") + cmd);
+    system(cmd.c_str());
+    log("SYNC-BOT", "Finished trasfer");
+}
+
+void SyncBot::sendDeleteFile(string file){
+    socket->sendMsg(string("rm -f ") + file);
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -322,28 +388,12 @@ void SyncBot::treatMessage(string message){
     if(words.size() > 0){
         string op = words.front();
         words.erase(words.begin());
-        if(words.size() == 0){
-            if(op == "start-sync"){
-                remoteStartSync();
-            }else if(op == "end-sync"){
-                remoteEndSync();
-            }
+        if(op == "start-sync" && words.size() == 0){
+            remoteStartSync();
+        }else if(op == "end-sync" && words.size() == 0){
+            remoteEndSync();
         }else if(op == "login" && words.size() == 1){
             login(words.front());
-        }else if(op == "auth" && words.size() >= 3){
-            auto it = words.begin();
-            string userPassword = *it;
-            it++;
-            string userName = *it;
-            it++;
-            string remoteDir = *it;
-            int transferPort = -1;
-            if(words.size() > 3){
-                it++;
-                string transferPortStr = *it;
-                transferPort = stoi(transferPortStr);
-            }
-            auth(userPassword, userName, remoteDir, transferPort);
         }else if(op == "dir" && words.size() == 2){
             dir(words.front(), words.back());
         }else if(op == "file" && words.size() >= 2){
@@ -359,7 +409,24 @@ void SyncBot::treatMessage(string message){
             }else if (action == "rm"){
                 fileRemove(fileName);
             }
-            
+        }else if(op == "mkdir" && words.size() == 2){
+            mkdir(message, words.back());
+        }else if(op == "rm" && words.size() == 3){
+            erase(message, words.back());
+        }else if(op == "auth" && words.size() >= 3){
+            auto it = words.begin();
+            string userPassword = *it;
+            it++;
+            string userName = *it;
+            it++;
+            string remoteDir = *it;
+            int transferPort = -1;
+            if(words.size() > 3){
+                it++;
+                string transferPortStr = *it;
+                transferPort = stoi(transferPortStr);
+            }
+            auth(userPassword, userName, remoteDir, transferPort);
         }else{
             error("SYNC-BOT", string("Invalid message to treat: ") + message);
         }
@@ -417,4 +484,14 @@ void SyncBot::remoteStartSync(){
 void SyncBot::remoteEndSync(){
     log("SYNC-BOT", string("Treating: remoteEndSync()"));
     remoteUpdating = false;
+}
+
+void SyncBot::mkdir(string message, string dir){
+    log("SYNC-BOT", string("Making directory ") + dir);
+    system(message.c_str());
+}
+
+void SyncBot::erase(string message, string obj){
+    log("SYNC-BOT", string("Erasing ") + obj);
+    system(message.c_str());
 }

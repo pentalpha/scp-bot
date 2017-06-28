@@ -8,6 +8,7 @@
 #include <mutex>
 #include <sstream>
 #include <unistd.h>
+#include <stdio.h>
 #include "logging.h"
 #include "Socket.h"
 #include "Server.h"
@@ -79,6 +80,10 @@ protected:
     void sendFileAdd(string file, time_t lastMod);
     void sendStartSync();
     void sendEndSync();
+    void sendDeleteFile(string file);
+    void sendFile(string localFile, string remoteFile);
+    void sendDeleteDir(string dir);
+    void sendMkdir(string dir);
     
     /*//Sync all info
     void syncInfo();
@@ -109,6 +114,8 @@ protected:
     void fileRemove(string file);
     void remoteStartSync();
     void remoteEndSync();
+    void mkdir(string message, string dir);
+    void erase(string message, string obj);
 
     bool isServer;
     //receiving update from remote / sending update to remote
@@ -128,7 +135,7 @@ protected:
     string localDirName, remoteDirName;
     string localPasswd, remotePasswd;
     string localUserName, remoteUserName;
-
+    string remoteAddress;
     Socket *socket = NULL;
     thread *updateThread = NULL;
     thread *treatMsgThread = NULL;
@@ -139,23 +146,29 @@ protected:
     bool finishFlag;
     bool authByRemote;
 /*Message dialog:
-Auth message:
-    auth [local password] [local sync dir] [scpPort]
-        scp port is optional
-Login message:
-    login [host password]
-Add directory to remote:
-    dir add [dir name];
-Remove directory on remote:
-    dir rm [dir name];
-Update/Add file to remote:
-    file up [file-name] [last-mod-time]
-Remove file from remote:
-    file rm [file-name]
-Init micro-sync:
-    start-sync
-End micro-sync:
-    end-sync
+    Auth message:
+        auth [local password] [local sync dir] [scpPort]
+            scp port is optional
+    Login message:
+        login [host password]
+    Add directory to remote:
+        dir add [dir name];
+    Remove directory on remote:
+        dir rm [dir name];
+    Update/Add file to remote:
+        file up [file-name] [last-mod-time]
+    Remove file from remote:
+        file rm [file-name]
+    Init micro-sync:
+        start-sync
+    End micro-sync:
+        end-sync
+    Make a directory:
+        mkdir [dir]
+    Delete a directory:
+        rm -Rf [dir]
+    Delete file:
+        rm -f [file]
 */
 };
 

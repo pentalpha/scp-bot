@@ -20,7 +20,7 @@ time_t getLastModTime(const char* filePath){
     //cout << "Trying to find mod time for " << filePath << endl;
     struct stat x;
     stat(filePath, &x);
-    return x.st_ctime;
+    return x.st_mtime;
 }
 
 void compareTwoFiles(char * argv[]){

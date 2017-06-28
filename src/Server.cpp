@@ -193,8 +193,13 @@ int Server::waitForClient(){
         exitFlag = true;
         return -1;
     }
+    char ipStr[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(addressClient.sin_addr), ipStr, INET_ADDRSTRLEN);
+    clientAddress = std::string(ipStr);
     connected = true;
     asleep = false;
+
+    
     return remoteClientId;
 }
 
