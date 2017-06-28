@@ -163,7 +163,7 @@ void SyncDir::searchForNewFiles(){
 void SyncDir::updateModTimes(){
     for(pair<string, FileInfo> fileEntry : files){
         time_t lastMod = getLastModTime(fileEntry.first.c_str());
-        if(lastMod > fileEntry.second.lastModification){
+        if(lastMod > fileEntry.second.lastModification + 2){
             modFile(fileEntry.first, lastMod);
         }else{
             //log("SYNC-DIR", fileEntry.second.path + string(" remains the same."));

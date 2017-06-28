@@ -32,6 +32,12 @@ enum AuthState{
     AUTHORIZED = 2
 };
 
+enum SyncAllowState{
+    WAIT = 10,
+    ALLOWED = 9,
+    DENYED = 8
+};
+
 /* Friendly bot that helps synchronizing files and dirs*/
 class SyncBot{
 public:
@@ -80,6 +86,7 @@ protected:
     void sendFileAdd(string file, time_t lastMod);
     void sendStartSync();
     void sendAllowSync();
+    void sendDenySync();
     void sendEndSync();
     void sendDeleteFile(string file);
     void sendFile(string localFile, string remoteFile);
@@ -115,6 +122,7 @@ protected:
     void fileRemove(string file);
     void remoteStartSync();
     void allowedToSync();
+    void denyedToSync();
     void remoteEndSync();
     void mkdir(string message, string dir);
     void erase(string message, string obj);
@@ -147,7 +155,7 @@ protected:
 
     bool finishFlag;
     bool authByRemote;
-    bool syncAllowdByRemote;
+    SyncAllowState syncAllowState;
 /*Message dialog:
     Auth message:
         auth [local password] [local sync dir] [scpPort]
@@ -166,6 +174,8 @@ protected:
         start-sync
     Sync allowed:
         allow-sync
+    Sync denyed:
+        deny-sync
     End micro-sync:
         end-sync
     Make a directory:

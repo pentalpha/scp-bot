@@ -26,7 +26,8 @@ SyncBot::SyncBot(OctoSyncArgs args)
     }
 
     remoteUpdating = localUpdating = false;
-    syncAllowdByRemote = authByRemote = false;
+    authByRemote = false;
+    syncAllowState = WAIT;
 
     socket = makeSocket(hostAddress, hostPort, isServer);
     if(socket == NULL){
@@ -231,17 +232,20 @@ void SyncBot::sync(){
     if(!remoteUpdating){
         if(localDir.hasChanges()){
             vector<string> changes = localDir.popChanges();
-            for(string change : changes){
+            while(changes.size() > 0){
+                string change = changes[changes.size()-1];
                 while(remoteUpdating){
                     //wait remote to end his update
                 }
                 sendStartSync();
-                while(!syncAllowdByRemote){
+                while(syncAllowState == WAIT){
 
                 }
-                sendChangeMsg(change);
-                syncAllowdByRemote = false;
-                sendEndSync();
+                if(syncAllowState == ALLOWED){
+                    sendChangeMsg(change);
+                    sendEndSync();
+                    changes.pop_back();
+                }
             }
         }else{
             while(remoteUpdating){
@@ -339,6 +343,7 @@ void SyncBot::sendFileAdd(string file, time_t lastMod){
 
 void SyncBot::sendStartSync(){
     localUpdating = true;
+    syncAllowState = WAIT;
     socket->sendMsg("start-sync");
     
 }
@@ -348,8 +353,13 @@ void SyncBot::sendAllowSync(){
     socket->sendMsg("allow-sync");
 }
 
+void SyncBot::sendDenySync(){
+    socket->sendMsg("deny-sync");
+}
+
 void SyncBot::sendEndSync(){
     localUpdating = false;
+    syncAllowState = WAIT;
     socket->sendMsg("end-sync");
 }
 
@@ -408,6 +418,8 @@ void SyncBot::treatMessage(string message){
             remoteEndSync();
         }else if(op == "allow-sync" && words.size() == 0){
             allowedToSync();
+        }else if(op == "deny-sync" && words.size() == 0){
+            denyedToSync();
         }else if(op == "login" && words.size() == 1){
             login(words.front());
         }else if(op == "mkdir" && words.size() == 1){
@@ -496,15 +508,21 @@ void SyncBot::fileRemove(string file){
 void SyncBot::remoteStartSync(){
     log("SYNC-BOT", string("Remote requires to start sync"));
     //remoteUpdating = true;
-    while(localUpdating){
-        //wait to finish update local
+    if(localUpdating){
+        sendDenySync();
+    }else{
+        sendAllowSync();
     }
-    sendAllowSync();
 }
 
 void SyncBot::allowedToSync(){
     log("SYNC-BOT", string("Allowed to do sync"));
-    syncAllowdByRemote = true;
+    syncAllowState = ALLOWED;
+}
+
+void SyncBot::denyedToSync(){
+    log("SYNC-BOT", string("Denyed to do sync"));
+    syncAllowState = DENYED;
 }
 
 void SyncBot::remoteEndSync(){
