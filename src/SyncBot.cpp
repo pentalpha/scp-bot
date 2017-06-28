@@ -221,7 +221,12 @@ void SyncBot::sync(){
     if(localDir.hasChanges()){
         vector<string> changes = localDir.popChanges();
         for(string change : changes){
+            while(remoteUpdating){
+                //wait remote to end his update
+            }
+            sendStartSync();
             sendChangeMsg(change);
+            sendEndSync();
         }
     }else{
         updateLocalDirIfNotBusy();
@@ -284,6 +289,17 @@ void SyncBot::sendFileAdd(string file, time_t lastMod){
     socket->sendMsg(string("file up ") + file + string(" ") + to_string(lastMod));
 }
 
+void SyncBot::sendStartSync(){
+    localUpdating = true;
+    socket->sendMsg("start-sync");
+    
+}
+
+void SyncBot::sendEndSync(){
+    localUpdating = false;
+    socket->sendMsg("end-sync");
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -306,7 +322,13 @@ void SyncBot::treatMessage(string message){
     if(words.size() > 0){
         string op = words.front();
         words.erase(words.begin());
-        if(op == "login" && words.size() == 1){
+        if(words.size() == 0){
+            if(op == "start-sync"){
+                remoteStartSync();
+            }else if(op == "end-sync"){
+                remoteEndSync();
+            }
+        }else if(op == "login" && words.size() == 1){
             login(words.front());
         }else if(op == "auth" && words.size() >= 3){
             auto it = words.begin();
@@ -385,4 +407,14 @@ void SyncBot::fileUp(string file, time_t lastMod){
 void SyncBot::fileRemove(string file){
     //log("SYNC-BOT", string("Treating: file rm ") + file);
     remoteDir.rmFile(file);
+}
+
+void SyncBot::remoteStartSync(){
+    log("SYNC-BOT", string("Treating: remoteStartSync()"));
+    remoteUpdating = true;
+}
+
+void SyncBot::remoteEndSync(){
+    log("SYNC-BOT", string("Treating: remoteEndSync()"));
+    remoteUpdating = false;
 }

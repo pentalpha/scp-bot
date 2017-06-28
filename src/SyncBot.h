@@ -77,7 +77,9 @@ protected:
     void sendDirAdd(string dir);
     void sendFileRemove(string file);
     void sendFileAdd(string file, time_t lastMod);
-
+    void sendStartSync();
+    void sendEndSync();
+    
     /*//Sync all info
     void syncInfo();
     //Sync only dir info
@@ -105,6 +107,8 @@ protected:
     void dir(string op, string dir);
     void fileUp(string file, time_t lastMod);
     void fileRemove(string file);
+    void remoteStartSync();
+    void remoteEndSync();
 
     bool isServer;
     //receiving update from remote / sending update to remote
@@ -148,6 +152,10 @@ Update/Add file to remote:
     file up [file-name] [last-mod-time]
 Remove file from remote:
     file rm [file-name]
+Init micro-sync:
+    start-sync
+End micro-sync:
+    end-sync
 */
 };
 
