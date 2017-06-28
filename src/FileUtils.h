@@ -22,8 +22,6 @@ using namespace std;
 struct FileInfo{
     //full path - sync dir
     string path;
-    //name (including extension)
-    string name;
     //should I even use this?
     //string extension;
     time_t lastModification;
@@ -45,8 +43,7 @@ void compareTwoFiles(char * argv[]);
 
 vector<tinydir_file> getSubFiles(string dir = "./");
 
-FileInfo getFileInfo(string filePath,
-                    string fileName);
+FileInfo getFileInfo(string filePath);
 
 FileInfo getFileInfo(tinydir_file file);
 

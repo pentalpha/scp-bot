@@ -36,13 +36,26 @@ SyncDir::~SyncDir(){
     }
 }
 
+time_t SyncDir::getModTimeOfFile(string filePath){
+    return files[filePath].lastModification;
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
+
+string SyncDir::getNoticeToLogIfRemote(){
+    string remoteNotice = " ";
+    if(remote){
+        remoteNotice = " (remote) ";
+    }
+    return remoteNotice;
+}
 
 void SyncDir::addFile(FileInfo file){
     std::lock_guard<std::mutex> guard(updateMutex);
     files[file.path] = file;
-    log("SYNC-DIR", string("Added ") + file.path);
+    log("SYNC-DIR", string("Added") + getNoticeToLogIfRemote() + file.path
+        + string(" ") + timeToChar(file.lastModification));
     if(!remote){
         upFileMsg(file.path);
     }
@@ -51,7 +64,7 @@ void SyncDir::modFile(string filePath, time_t newModTime){
     std::lock_guard<std::mutex> guard(updateMutex);
     time_t lastMod = files[filePath].lastModification;
     files[filePath].lastModification = newModTime;
-    log("SYNC-DIR", filePath + string(" has been altered: ")
+    log("SYNC-DIR", filePath + getNoticeToLogIfRemote() + string("has been altered: ")
     + timeToChar(newModTime) + string(" > ") + timeToChar(lastMod));
     if(!remote){
         upFileMsg(filePath);
@@ -60,7 +73,7 @@ void SyncDir::modFile(string filePath, time_t newModTime){
 void SyncDir::rmFile(string filePath){
     std::lock_guard<std::mutex> guard(updateMutex);
     files.erase(filePath);
-    log("SYNC-DIR", string("Removed ") + filePath);
+    log("SYNC-DIR", string("Removed") + getNoticeToLogIfRemote() + filePath);
     if(!remote){
         rmFileMsg(filePath);
     }
@@ -69,7 +82,7 @@ void SyncDir::rmFile(string filePath){
 void SyncDir::addDir(string dir){
     std::lock_guard<std::mutex> guard(updateMutex);
     subDirs.insert(dir);
-    log("SYNC-DIR", string("New folder: ") + dir);
+    log("SYNC-DIR", string("New folder:") + getNoticeToLogIfRemote() + dir);
     if(!remote){
         upDirMsg(dir);
     }
@@ -77,7 +90,7 @@ void SyncDir::addDir(string dir){
 void SyncDir::rmDir(string dirPath){
     std::lock_guard<std::mutex> guard(updateMutex);
     subDirs.erase(dirPath);
-    log("SYNC-DIR",string("Removed folder: ") + dirPath);
+    log("SYNC-DIR",string("Removed folder:") + getNoticeToLogIfRemote() + dirPath);
     if(!remote){
         rmDirMsg(dirPath);
     }
@@ -217,6 +230,10 @@ vector<string> SyncDir::popChanges(){
     fileChanges.clear();
 
     return changes;
+}
+
+bool SyncDir::hasChanges(){
+    return ((dirChanges.size() + fileChanges.size()) > 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////

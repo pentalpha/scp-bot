@@ -51,6 +51,7 @@ protected:
     //returns pointer to Client or Server
     static Socket* makeSocket(string ip, int port, bool server);
     static string getUserName();
+    static list<string> splitStrInList(string s);
 
     //Tryes to get differences 
     //void lookForDiffs();
@@ -71,6 +72,12 @@ protected:
 
     void sync();
     void updateLocalDirIfNotBusy();
+    void sendChangeMsg(string change);
+    void sendDirRemove(string dir);
+    void sendDirAdd(string dir);
+    void sendFileRemove(string file);
+    void sendFileAdd(string file, time_t lastMod);
+
     /*//Sync all info
     void syncInfo();
     //Sync only dir info
@@ -95,6 +102,9 @@ protected:
     void treatMessage(string message);
     void login(string password);
     void auth(string userPassword, string userName, string remoteDir, int transferPort);
+    void dir(string op, string dir);
+    void fileUp(string file, time_t lastMod);
+    void fileRemove(string file);
 
     bool isServer;
     //receiving update from remote / sending update to remote
@@ -124,12 +134,21 @@ protected:
 
     bool finishFlag;
     bool authByRemote;
-    /*Message dialog:
+/*Message dialog:
 Auth message:
     auth [local password] [local sync dir] [scpPort]
         scp port is optional
 Login message:
-    login [host password]*/
+    login [host password]
+Add directory to remote:
+    dir add [dir name];
+Remove directory on remote:
+    dir rm [dir name];
+Update/Add file to remote:
+    file up [file-name] [last-mod-time]
+Remove file from remote:
+    file rm [file-name]
+*/
 };
 
 

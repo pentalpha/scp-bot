@@ -43,6 +43,8 @@ public:
     void finish();
 
     vector<string> popChanges();
+    bool hasChanges();
+    time_t getModTimeOfFile(string filePath);
 private:
     void updateCycle();
     
@@ -74,6 +76,8 @@ private:
     void putChangeMessage(string type, string file, bool fileMsg);
     
     list<string> fileChanges, dirChanges;
+
+    string getNoticeToLogIfRemote();
 };
 
 /*

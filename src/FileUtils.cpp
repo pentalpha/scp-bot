@@ -102,15 +102,13 @@ vector<tinydir_file> getSubFiles(string dirToScan){
 }
 
 FileInfo getFileInfo(tinydir_file file){
-    struct FileInfo info = getFileInfo(file.path, file.name);
+    struct FileInfo info = getFileInfo(file.path);
     return info;
 }
 
-FileInfo getFileInfo(string filePath,
-                    string fileName){
+FileInfo getFileInfo(string filePath){
     struct FileInfo info;
     info.path = filePath;
-    info.name = fileName;
     info.lastModification = getLastModTime(filePath.c_str());
     return info;
 }

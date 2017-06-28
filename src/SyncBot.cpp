@@ -40,6 +40,16 @@ string SyncBot::getUserName(){
     return string(getlogin());
 }
 
+list<string> SyncBot::splitStrInList(string s){
+    istringstream sstream(s);
+    list<string> words;
+    string newWord;
+    while(sstream >> newWord){
+        words.push_back(newWord);
+    }
+    return words;
+}
+
 Socket* SyncBot::makeSocket(string ip, int port, bool server){
     Socket* socket;
     if(server){
@@ -208,13 +218,70 @@ bool SyncBot::hasRemoteAuthorization(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::sync(){
-    updateLocalDirIfNotBusy();
+    if(localDir.hasChanges()){
+        vector<string> changes = localDir.popChanges();
+        for(string change : changes){
+            sendChangeMsg(change);
+        }
+    }else{
+        updateLocalDirIfNotBusy();
+    }
 }
 
 void SyncBot::updateLocalDirIfNotBusy(){
     if(localDir.isUpdating() == false){
         localDir.updateFilesAndDirs(true);
     }
+}
+
+void SyncBot::sendChangeMsg(string change){
+    list<string> words = splitStrInList(change);
+    string op = words.front();
+    bool up, file;
+    if(op == "up-file"){
+        up = true;
+        file = true;
+    }else if(op == "rm-file"){
+        up = false;
+        file = true;
+    }else if(op == "up-dir"){
+        up = true;
+        file = false;
+    }else if(op == "rm-dir"){
+        up = false;
+        file = false;
+    }
+    string obj = words.back();
+    if(!file){
+        if(up){
+            sendDirAdd(obj);
+        }else{
+            sendDirRemove(obj);
+        }
+    }else{
+        time_t lastMod = localDir.getModTimeOfFile(obj);
+        if(up){
+            sendFileAdd(obj, lastMod);
+        }else{
+            sendFileRemove(obj);
+        }
+    }
+}
+
+void SyncBot::sendDirRemove(string dir){
+    socket->sendMsg(string("dir rm ") + dir);
+}
+
+void SyncBot::sendDirAdd(string dir){
+    socket->sendMsg(string("dir add ") + dir);
+}
+
+void SyncBot::sendFileRemove(string file){
+    socket->sendMsg(string("file rm ") + file);
+}
+
+void SyncBot::sendFileAdd(string file, time_t lastMod){
+    socket->sendMsg(string("file up ") + file + to_string(lastMod));
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -235,12 +302,7 @@ void SyncBot::treatMessagesCycle(){
 }
 
 void SyncBot::treatMessage(string message){
-    istringstream sstream(message);
-    list<string> words;
-    string newWord;
-    while(sstream >> newWord){
-        words.push_back(newWord);
-    }
+    list<string> words = splitStrInList(message);
     if(words.size() > 0){
         string op = words.front();
         words.erase(words.begin());
@@ -260,6 +322,22 @@ void SyncBot::treatMessage(string message){
                 transferPort = stoi(transferPortStr);
             }
             auth(userPassword, userName, remoteDir, transferPort);
+        }else if(op == "dir" && words.size() == 2){
+            dir(words.front(), words.back());
+        }else if(op == "file" && words.size() >= 2){
+            auto it = words.begin();
+            string action = *it;
+            it++;
+            string fileName = *it;
+            if(action == "up"){
+                it++;
+                string lastModStr = *it;
+                int lastModInt = stoi(lastModStr);
+                fileUp(fileName, lastModInt);
+            }else if (action == "rm"){
+                fileRemove(fileName);
+            }
+            
         }else{
             error("SYNC-BOT", string("Invalid message to treat: ") + message);
         }
@@ -270,12 +348,12 @@ void SyncBot::treatMessage(string message){
 
 void SyncBot::login(string password){
     std::lock_guard<std::mutex> guard(loginMutex);
-    log("SYNC-BOT", string("Treating login ") + password);
+    log("SYNC-BOT", string("Treating: login ") + password);
     hostPasswdTry = password;
 }
 
 void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, int transferPort){
-    log("SYNC-BOT", string("Treating auth ") + userPassword + string(" ") + remoteSyncDir);
+    log("SYNC-BOT", string("Treating: auth ") + userPassword + string(" ") + remoteSyncDir);
     if(transferPort > 0){
         remoteScpPort = transferPort;
     }
@@ -285,4 +363,26 @@ void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, i
     remoteUserName = userName;
     authByRemote = true;
     //log("SYNC-BOT", "Treated auth and authorized");
+}
+
+void SyncBot::dir(string op, string dir){
+    log("SYNC-BOT", string("Treating: dir ") + op + string(" ") + dir);
+    if(op == "add"){
+        remoteDir.addDir(dir);
+    }else if(op == "rm"){
+        remoteDir.rmDir(dir);
+    }
+}
+
+void SyncBot::fileUp(string file, time_t lastMod){
+    log("SYNC-BOT", string("Treating: file up ") + file + string(" ") + timeToChar(lastMod));
+    FileInfo info;
+    info.path = file;
+    info.lastModification = lastMod;
+    remoteDir.addFile(info);
+}
+
+void SyncBot::fileRemove(string file){
+    log("SYNC-BOT", string("Treating: file rm ") + file);
+    remoteDir.rmFile(file);
 }
