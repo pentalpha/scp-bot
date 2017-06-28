@@ -21,6 +21,8 @@ public:
     Socket(std::string hostAddr, int portN);
     bool config();
     virtual bool startTransaction() = 0;
+    virtual bool sendMsg(std::string msg) = 0;
+    bool isAsleep();
     bool isConnected();
     void waitToFinish();
     void finish();
@@ -49,7 +51,7 @@ protected:
     int hostPort;
     std::string hostAddress;
     StringQueue received;
-    bool connected, exitFlag, receiving;
+    bool asleep, connected, exitFlag, receiving;
 private:
     std::string retrieveMessagesFromBufferAndRecv(std::string buffer, std::string message);
     void addMsgToReceiveds(std::string message);

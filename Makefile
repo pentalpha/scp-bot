@@ -6,5 +6,5 @@ all:
 		src/logging.cpp \
 		src/run.cpp src/FileUtils.cpp \
 		src/ArgParser.cpp src/OctoSyncArgs.cpp \
-		src/SyncDir.cpp \
+		src/SyncBot.cpp src/SyncDir.cpp \
 		-pthread

@@ -3,12 +3,14 @@
 Socket::Socket(std::string hostAddr, int portN)
     : hostPort(portN), hostAddress(hostAddr)
 {
-    
+    asleep = true;
     connected = false;
     receiving = false;
     exitFlag = false;
     if(!config()){
         exitFlag = true;
+    }else{
+
     }
 }
 
@@ -39,6 +41,10 @@ bool Socket::isConnected(){
     return !exitFlag || connected;
 }
 
+bool Socket::isAsleep(){
+    return asleep;
+}
+
 void Socket::waitToFinish(){
     while(isConnected()){
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -48,6 +54,7 @@ void Socket::waitToFinish(){
 void Socket::finish(){
     exitFlag = true;
     connected = false;
+    asleep = true;
     closeSocket();
 }
 
@@ -135,6 +142,9 @@ bool Socket::sendAMsg(std::string msg, int targetId){
         targetId = socketId;
     }
     std::string str = msg;
+    if(str[str.length()-1] != '\n'){
+        str += "\n";
+    }
     int bytesenviados;
     //log("SOCKET", "SOCKETe vai enviar uma mensagem");
     //recv(connectionSOCKETId,msg,MAXMSG,0);

@@ -19,6 +19,7 @@ class Client : public Socket{
 public:
     Client(std::string hostAddr, int portN);
     bool startTransaction();
+    bool sendMsg(std::string str);
 private:
     //Conectando o socket cliente ao socket servidor
     bool connectToHost(); 

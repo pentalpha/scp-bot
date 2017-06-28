@@ -54,7 +54,7 @@ public:
   bool startTransaction();
   bool isWaiting();
   bool isBinded();
-  bool sendToClient(std::string str);
+  bool sendMsg(std::string str);
 protected:
   int waitForClient();
   bool doBind();

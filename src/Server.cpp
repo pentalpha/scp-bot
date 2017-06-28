@@ -208,8 +208,8 @@ bool Server::startTransaction(){
     return false;
 }
 
-bool Server::sendToClient(std::string str){
-    sendAMsg(str, connectionClientId);
+bool Server::sendMsg(std::string str){
+    return sendAMsg(str, connectionClientId);
 }
 
 bool Server::isBinded(){

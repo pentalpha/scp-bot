@@ -130,16 +130,14 @@ bool OctoSyncArgs::validateArgs(){
         }
     }
     if(hostPasswd == "none"){
-        if(sync){
-            cout << "Enter host password: ";
-            string passwd = getSecretString();
-            cout << endl;
-            if(passwd != ""){
-                hostPasswd = passwd;
-            }else{
-                log("OCTO-SYNC-ARGS", string("No host password defined"));
-                return false;
-            }
+        cout << "Enter host password: ";
+        string passwd = getSecretString();
+        cout << endl;
+        if(passwd != ""){
+            hostPasswd = passwd;
+        }else{
+            log("OCTO-SYNC-ARGS", string("No host password defined"));
+            return false;
         }
     }
     if(hostPort == -1){
@@ -181,23 +179,24 @@ void OctoSyncArgs::printGivenArgs(){
 
 void OctoSyncArgs::printHelp(){
     cout << syncCmdArgName << " or " << hostCmdArgName << endl
-    << "\t" << "The operation to perform: either host or sync" << endl
+    << "\t" << "The operation to perform: either host or sync;" << endl
     << "Use [arg-name]=[value] to pass arguments:" << endl
     << "* = obrigatory" << endl
     << "# = obrigatory to host" << endl
     << "$ = obrigatory to sync" << endl
     << syncDirArgName << endl
-    << "\t" << "* The directory to synchronize" << endl
+    << "\t" << "* The directory to synchronize;" << endl
     << hostAddressArgName << endl
-    << "\t" << "* Hosting machine ip" << endl
+    << "\t" << "* Hosting machine ip;" << endl
     << hostPortArgName << endl
-    << "\t" << "* Hosting machine port" << endl
+    << "\t" << "* Hosting machine port;" << endl
     << localPasswdArgName << endl
-    << "\t" << "* Local machine (sync or host) user password" << endl
+    << "\t" << "* Local machine (sync or host) user password."
+            << " The remote will use this password on the scp command;" << endl
     << hostPasswdArgName << endl
-    << "\t" << "$ Password of the host" << endl
+    << "\t" << "* Server Password of the host. Used to login;" << endl
     << scpPortArgName << endl
-    << "\t" << "Specify a port for the scp command" << endl;
+    << "\t" << "Specify a port for the scp command;" << endl;
 }
 
 char getch(){

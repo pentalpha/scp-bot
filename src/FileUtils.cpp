@@ -89,7 +89,6 @@ vector<tinydir_file> getSubFiles(string dirToScan){
                 }else{
                     //cout << file.path << " is empty\n";
                 }
-                files.push_back(file);
             }
         }else{
             files.push_back(file);

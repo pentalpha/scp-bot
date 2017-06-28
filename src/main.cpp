@@ -5,6 +5,7 @@
 //#include "logging.h"
 //#include "run.h"
 #include "OctoSyncArgs.h"
+#include "SyncBot.h"
 
 using namespace std;
 
@@ -14,7 +15,8 @@ using namespace std;
 int main(int argc, char * argv[]){
     OctoSyncArgs args(argc, argv);
     if(args.success){
-        
+        SyncBot bot(args);
+        bot.run();
     }
     /*if(argc == 4){
         string op(argv[1]);

@@ -23,10 +23,13 @@ class SyncDir{
 public:
     const int autoUpdateDelayMS = 500;
     SyncDir(string dir, bool local = true);
+    SyncDir();
+    void setDir(string dir);
     ~SyncDir();
     static SyncDirDiff diff(SyncDir* other);
-
+    void updateFilesAndDirs(bool delay = false);
     void addFile(FileInfo file);
+    void modFile(string filePath, time_t newModTime);
     void rmFile(string filePath);
     void addDir(string dir);
     void rmDir(string dirPath);
@@ -41,7 +44,7 @@ public:
     vector<string> popChanges();
 private:
     void updateCycle();
-    void updateFilesAndDirs();
+    
     void searchForNewFiles();
     void updateModTimes();
     void updateDirs();

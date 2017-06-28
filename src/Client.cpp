@@ -28,3 +28,7 @@ bool Client::connectToHost(){
     return true;
 }
 
+bool Client::sendMsg(std::string str){
+    return sendAMsg(str);
+}
+
