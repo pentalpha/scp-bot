@@ -7,6 +7,7 @@
 #include <thread>
 #include <mutex>
 #include <sstream>
+#include <unistd.h>
 #include "logging.h"
 #include "Socket.h"
 #include "Server.h"
@@ -49,6 +50,7 @@ public:
 protected:
     //returns pointer to Client or Server
     static Socket* makeSocket(string ip, int port, bool server);
+    static string getUserName();
 
     //Tryes to get differences 
     //void lookForDiffs();
@@ -92,7 +94,7 @@ protected:
     void treatMessagesCycle();
     void treatMessage(string message);
     void login(string password);
-    void auth(string userPassword, string remoteDir, int transferPort);
+    void auth(string userPassword, string userName, string remoteDir, int transferPort);
 
     bool isServer;
     //receiving update from remote / sending update to remote
@@ -109,8 +111,9 @@ protected:
 
     SyncDir localDir, remoteDir;
 
-    string localDirName;
+    string localDirName, remoteDirName;
     string localPasswd, remotePasswd;
+    string localUserName, remoteUserName;
 
     Socket *socket = NULL;
     thread *updateThread = NULL;

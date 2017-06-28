@@ -5,6 +5,7 @@ SyncBot::SyncBot(OctoSyncArgs args)
 {
     isServer = args.host;
     localDirName = getAbsolutePath(args.syncDir);
+    remoteDirName = "";
     hostPort = args.hostPort;
     hostAddress = args.hostAddress;
     hostPasswd = args.hostPasswd;
@@ -12,7 +13,9 @@ SyncBot::SyncBot(OctoSyncArgs args)
 
     localPasswd = args.localPasswd;
     remotePasswd = "";
-
+    localUserName = getUserName();
+    remoteUserName = "";
+    //cout << "user name " << localUserName << endl;
     if(args.scpPort != -1){
         scpPort = args.scpPort;
     }
@@ -31,6 +34,10 @@ SyncBot::SyncBot(OctoSyncArgs args)
     updateThread->detach();
     treatMsgThread = new thread(&SyncBot::treatMessagesCycle, this);
     treatMsgThread->detach();
+}
+
+string SyncBot::getUserName(){
+    return string(getlogin());
 }
 
 Socket* SyncBot::makeSocket(string ip, int port, bool server){
@@ -181,6 +188,8 @@ bool SyncBot::sendAuthMessage(){
     msg += "auth ";
     msg += localPasswd;
     msg += " ";
+    msg += localUserName;
+    msg += " ";
     msg += localDirName;
     if(scpPort != -1){
         msg += " ";
@@ -237,18 +246,20 @@ void SyncBot::treatMessage(string message){
         words.erase(words.begin());
         if(op == "login" && words.size() == 1){
             login(words.front());
-        }else if(op == "auth" && words.size() >= 2){
+        }else if(op == "auth" && words.size() >= 3){
             auto it = words.begin();
             string userPassword = *it;
             it++;
+            string userName = *it;
+            it++;
             string remoteDir = *it;
             int transferPort = -1;
-            if(words.size() > 2){
+            if(words.size() > 3){
                 it++;
                 string transferPortStr = *it;
                 transferPort = stoi(transferPortStr);
             }
-            auth(userPassword, remoteDir, transferPort);
+            auth(userPassword, userName, remoteDir, transferPort);
         }else{
             error("SYNC-BOT", string("Invalid message to treat: ") + message);
         }
@@ -263,13 +274,15 @@ void SyncBot::login(string password){
     hostPasswdTry = password;
 }
 
-void SyncBot::auth(string userPassword, string remoteSyncDir, int transferPort){
+void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, int transferPort){
     log("SYNC-BOT", string("Treating auth ") + userPassword + string(" ") + remoteSyncDir);
     if(transferPort > 0){
         remoteScpPort = transferPort;
     }
     remotePasswd = userPassword;
     remoteDir.setDir(remoteSyncDir);
+    remoteDirName = remoteSyncDir;
+    remoteUserName = userName;
     authByRemote = true;
     //log("SYNC-BOT", "Treated auth and authorized");
 }
