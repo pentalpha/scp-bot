@@ -1,5 +1,5 @@
 all:
-	g++ --std=c++14 -o octo-sync \
+	g++ --std=c++11 -o octo-sync \
 		src/main.cpp \
 		src/Socket.cpp src/Server.cpp src/Client.cpp \
 		src/StringQueue.cpp \
