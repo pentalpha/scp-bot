@@ -281,7 +281,7 @@ void SyncBot::sendFileRemove(string file){
 }
 
 void SyncBot::sendFileAdd(string file, time_t lastMod){
-    socket->sendMsg(string("file up ") + file + to_string(lastMod));
+    socket->sendMsg(string("file up ") + file + string(" ") + to_string(lastMod));
 }
 
 //////////////////////////////////////////////////////////////////////////////////
