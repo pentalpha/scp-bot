@@ -81,7 +81,7 @@ void Socket::receiveMessagesThread(int targetId){
     int bytesread = 0;
     std::string buffer = "";
     while(!exitFlag && connected){
-        log("SOCKET", "SOCKET waiting for a message...");
+        //log("SOCKET", "SOCKET waiting for a message...");
         memset(msg, 0, sizeof(msg));
         bytesread = recv(targetId,msg,MAXMSG,0);
         if (bytesread == -1)
@@ -133,8 +133,8 @@ std::string Socket::retrieveMessagesFromBufferAndRecv(std::string buffer, std::s
 
 void Socket::addMsgToReceiveds(std::string message){
     std::string *s = new std::string(message);
-    log("SOCKET", std::string("Received: ") + message);
     received.push(s);
+    log("SOCKET", std::string("Received: ") + message);
 }
 
 bool Socket::sendAMsg(std::string msg, int targetId){
@@ -155,7 +155,7 @@ bool Socket::sendAMsg(std::string msg, int targetId){
         log("SOCKET", "Falha ao executar send()");
         return false;
     }
-    log("SOCKET", std::string("SOCKET enviou a seguinte msg (") + std::to_string(bytesenviados) 
-        + std::string(" bytes) para o servidor:") + str);
+    log("SOCKET", std::string("SOCKET sent: (") + std::to_string(bytesenviados) 
+        + std::string(" bytes) to remote socket:") + str);
     return true;
 }

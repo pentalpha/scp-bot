@@ -68,6 +68,7 @@ void SyncBot::updateCycle(){
 }
 
 void SyncBot::update(){
+    //cout << "update\n";
     if(state == SLEEP){
         sleeping();
     }else if(state == WAITING){
@@ -83,6 +84,7 @@ void SyncBot::update(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::sleeping(){
+    //cout << "asleep\n";
     if(!(socket->isAsleep())){
         state = WAITING;
         log("SYNC-BOT", "SyncBot is now WAITING");
@@ -96,11 +98,13 @@ void SyncBot::sleeping(){
 
 void SyncBot::waiting(){
     if(socket->isConnected()){
+        //cout << "not connected\n";
         state = AUTH;
         log("SYNC-BOT", "SyncBot is now in AUTH");
         authState = NOT_STARTED;
         log("SYNC-BOT", "SyncBot has NOT_STARTED AUTH");
     }else{
+        //cout << "not connected\n";
         updateLocalDirIfNotBusy();
     }
 }
@@ -215,6 +219,7 @@ void SyncBot::treatMessagesCycle(){
             }else{
                 break;
             }
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
 }

@@ -112,7 +112,9 @@ void SyncDir::searchForNewFiles(){
     for(tinydir_file file : scanned){
         if(files.find(file.path) == files.end()){
             FileInfo info = getFileInfo(file);
-            addFile(info);
+            if(info.path.find(OctoSyncArgs::configFileName) == string::npos){
+                addFile(info);
+            }
         }else{
             deletedFiles.erase(file.path);
         }

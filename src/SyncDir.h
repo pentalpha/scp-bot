@@ -12,6 +12,7 @@
 #include <list>
 #include "FileUtils.h"
 #include "logging.h"
+#include "OctoSyncArgs.h"
 
 struct SyncDirDiff{
     vector<string> missingDirs, missingFiles;

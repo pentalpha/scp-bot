@@ -14,7 +14,7 @@
 #include "logging.h"
 #include "StringQueue.h"
  
-#define MAXMSG 1024
+#define MAXMSG 7
 
 class Socket{
 public:

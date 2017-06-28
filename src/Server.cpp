@@ -185,6 +185,7 @@ int Server::waitForClient(){
 
     log("SERVER", std::string("Connected to ") + std::string(inet_ntoa(addressClient.sin_addr)));
     waitingFlag = false;
+    
     //Verificando erros
     if (remoteClientId == -1)
     {
@@ -193,6 +194,7 @@ int Server::waitForClient(){
         return -1;
     }
     connected = true;
+    asleep = false;
     return remoteClientId;
 }
 

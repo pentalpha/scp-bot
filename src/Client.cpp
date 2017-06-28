@@ -20,11 +20,12 @@ bool Client::startTransaction(){
 bool Client::connectToHost(){
     int connectRes = connect (socketId, (struct sockaddr *)&addr, sizeof(struct sockaddr));
     if (connectRes == -1){
-        log("CLIENT", "Falha ao executar connect()");
+        log("CLIENT", "Failed to connect()");
         return false;
     }
     connected = true;
-    log("CLIENT", "Cliente conectado ao servidor");
+    asleep = false;
+    log("CLIENT", "Client connected to server");
     return true;
 }
 
