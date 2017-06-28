@@ -406,6 +406,8 @@ void SyncBot::treatMessage(string message){
             remoteStartSync();
         }else if(op == "end-sync" && words.size() == 0){
             remoteEndSync();
+        }else if(op == "allow-sync" && words.size() == 0){
+            allowedToSync();
         }else if(op == "login" && words.size() == 1){
             login(words.front());
         }else if(op == "mkdir" && words.size() == 1){
