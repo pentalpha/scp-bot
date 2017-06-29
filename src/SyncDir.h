@@ -19,6 +19,13 @@ struct SyncDirDiff{
     vector<string> newDirs, newFiles;
 };
 
+struct SyncChange{
+    bool isUp, isFile;
+    string path;
+};
+
+
+
 //Directory to sync. Can represent the data on the remote too
 class SyncDir{
 public:
@@ -42,8 +49,8 @@ public:
     void resumeUpdating();
     void finish();
 
-    vector<string> popChanges();
-    string nextChange();
+    vector<SyncChange> popChanges();
+    SyncChange nextChange();
     void popNextChange();
     bool hasChanges();
 
@@ -67,22 +74,29 @@ private:
     mutex updateMutex, addMsgMutex;
     thread* updatingThread = NULL;
 
+    static SyncChange getUpFileChange(string path);
+    static SyncChange getRmFileChange(string path);
+    static SyncChange getUpDirChange(string path);
+    static SyncChange getRmDirChange(string path);
+
+    void putChangeMessage(SyncChange change);
+
     inline void upFileMsg(string file){
-        putChangeMessage("up-file", file, true);
+        putChangeMessage(getUpFileChange(file));
     }
     inline void rmFileMsg(string file){
-        putChangeMessage("rm-file", file, true);
+        putChangeMessage(getRmFileChange(file));
     }
     inline void upDirMsg(string dir){
-        putChangeMessage("up-dir", dir, false);
+        putChangeMessage(getUpDirChange(dir));
     }
     inline void rmDirMsg(string dir){
-        putChangeMessage("rm-dir", dir, false);
+        putChangeMessage(getRmDirChange(dir));
     }
-    static bool searchAndEraseElementInListContaining(list<string> &items, string s);
-    void putChangeMessage(string type, string file, bool fileMsg);
+    //static bool searchAndEraseElementInListContaining(list<string> &items, string s);
+    void eraseChangesWhichInvolve(list<SyncChange> items, string path);
     
-    list<string> fileChanges, dirChanges;
+    list<SyncChange> fileChanges, dirChanges;
 
     string getNoticeToLogIfRemote();
 };

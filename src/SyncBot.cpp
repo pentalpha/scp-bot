@@ -25,8 +25,9 @@ SyncBot::SyncBot(OctoSyncArgs args)
         scpPort = args.scpPort;
     }
 
-    remoteUpdating = localUpdating = false;
+    //remoteUpdating = localUpdating = false;
     authByRemote = false;
+    remoteSharedInitialInfo = sharedInitialInfo = false;
     syncAllowState = WAIT;
 
     socket = makeSocket(hostAddress, hostPort, isServer);
@@ -88,6 +89,7 @@ void SyncBot::updateCycle(){
     //log("SYNC-BOT", "Starting to update");
     while(!finishFlag){
         update();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
 
@@ -99,11 +101,17 @@ void SyncBot::update(){
         waiting();
     }else if(state == AUTH){
         authentication();
+    }else if(state == SHARE){
+        share();
     }else if(state == SYNC){
         sync();
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -113,10 +121,16 @@ void SyncBot::sleeping(){
         state = WAITING;
         log("SYNC-BOT", "SyncBot is now WAITING");
     }else{
-        localUpdating = true;
         updateLocalDirIfNotBusy();
-        localUpdating = false;
     }
+}
+
+void SyncBot::updateLocalDirIfNotBusy(){
+    //localUpdating.lock();
+    if(localDir.isUpdating() == false){
+        localDir.updateFilesAndDirs(false);
+    }
+    //localUpdating.unlock();
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -135,9 +149,7 @@ void SyncBot::waiting(){
         //log("SYNC-BOT", "SyncBot has NOT_STARTED AUTH");
     }else{
         //cout << "not connected\n";
-        localUpdating = true;
         updateLocalDirIfNotBusy();
-        localUpdating = false;
     }
 }
 
@@ -179,8 +191,8 @@ void SyncBot::authentication(){
             }
         }
     }else if(authState == AUTHORIZED){
-        state = SYNC;
-        log("SYNC-BOT", "SyncBot is now in SYNC");
+        state = SHARE;
+        log("SYNC-BOT", "SyncBot is now in SHARE");
     }
 }
 
@@ -232,46 +244,171 @@ bool SyncBot::hasRemoteAuthorization(){
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-void SyncBot::sync(){
-    if(!remoteUpdating){
-        while(remoteUpdating){
-            //wait remote to end his update
-        }
-        localUpdating = true;
-        updateLocalDirIfNotBusy();
-        localUpdating = false;
-        if(localDir.hasChanges()){
-            string change = localDir.nextChange();
-            if(change != ""){
-                log("SYNC-BOT", string("Going try sync: ") 
-                    + change);
-                while(remoteUpdating){
-                    //wait remote to end his update
-                }
-                sendStartSync();
-                while(syncAllowState == WAIT){
+void SyncBot::share(){
+    log("SYNC-BOT", string("Trying to lock on share()"));
+    syncLock.lock();
+    log("SYNC-BOT", string("Locking on share()"));
+    updateLocalDirIfNotBusy();
+    if(localDir.hasChanges()){
+        SyncChange change = localDir.nextChange();
+        if(change.path != ""){
+            log("SYNC-BOT", string("Going try share: ") 
+                + change.path);
+            sendStartSync();
+            while(syncAllowState == WAIT){
 
+            }
+            if(syncAllowState == ALLOWED){
+                sendChangeInfo(change);
+                localDir.popNextChange();
+            }
+            syncAllowState = WAIT;
+            sendEndSync();
+        }
+    }else if(!sharedInitialInfo){
+        sendSharedAll();
+        sharedInitialInfo = true;
+    }
+    if(sharedInitialInfo && remoteSharedInitialInfo){
+        state = SYNC;
+        log("SYNC-BOT", "SyncBot is now in SYNC");
+    }
+    log("SYNC-BOT", string("Unlocking on share()"));
+    syncLock.unlock();
+}
+
+void SyncBot::sendChangeInfo(SyncChange change){
+    if(change.isFile){
+        if(change.isUp){
+            time_t lastChange = localDir.getModTimeOfFile(change.path);
+            sendFileAdd(change.path, lastChange);
+        }else{
+            sendFileRemove(change.path);
+        }
+    }else{
+        if(change.isUp){
+            sendDirAdd(change.path);
+        }else{
+            sendDirRemove(change.path);
+        }
+    }
+}
+
+void SyncBot::sendDirRemove(string dir){
+    socket->sendMsg(string("dir rm ") + dir);
+}
+
+void SyncBot::sendDirAdd(string dir){
+    socket->sendMsg(string("dir add ") + dir);
+}
+
+void SyncBot::sendFileRemove(string file){
+    socket->sendMsg(string("file rm ") + file);
+}
+
+void SyncBot::sendFileAdd(string file, time_t lastMod){
+    socket->sendMsg(string("file up ") + file + string(" ") + to_string(lastMod));
+}
+
+void SyncBot::sendStartSync(){
+    //localUpdating = true;
+    syncAllowState = WAIT;
+    socket->sendMsg("start-sync");
+}
+
+void SyncBot::sendAllowSync(){
+    //remoteUpdating = true;
+    socket->sendMsg("allow-sync");
+}
+
+void SyncBot::sendDenySync(){
+    socket->sendMsg("deny-sync");
+}
+
+void SyncBot::sendEndSync(){
+    //localUpdating = false;
+    syncAllowState = WAIT;
+    socket->sendMsg("end-sync");
+}
+
+void SyncBot::sendSharedAll(){
+    socket->sendMsg("shared-all");
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+void SyncBot::sync(){
+    log("SYNC-BOT", string("Trying to lock on sync()"));
+    syncLock.lock();
+    log("SYNC-BOT", string("Locking on sync()"));
+    updateLocalDirIfNotBusy();
+    if(localDir.hasChanges()){
+        SyncChange change = localDir.nextChange();
+        if(change.path != ""){
+            log("SYNC-BOT", string("Going try sync: ") 
+                + change.path);
+            sendStartSync();
+            while(syncAllowState == WAIT){
+
+            }
+            if(syncAllowState == ALLOWED){
+                sendChangeInfo(change);
+                sendChange(change);
+                //sendChangeMsg(change);
+                localDir.popNextChange();
+            }
+            syncAllowState = WAIT;
+            sendEndSync();
+        }
+    }
+    log("SYNC-BOT", string("Unlocking on sync()"));
+    syncLock.unlock();
+}
+
+void SyncBot::sendChange(SyncChange change){
+    string obj = change.path;
+    string noSyncDirObj = localDir.getFilePathWithoutSyncDir(obj);
+    string remotePathObj = remoteDirName;
+    if(remoteDirName[remoteDirName.length()-1] != '/'){
+        remotePathObj += "/";
+    }
+    remotePathObj += noSyncDirObj;
+
+    if(change.isFile){
+        if(change.isUp){
+            time_t lastMod = localDir.getModTimeOfFile(obj);
+            bool send = false;
+            if(!remoteDir.hasFile(remotePathObj)){
+                send = true;
+            }else{
+                time_t remoteLastMod = remoteDir.getModTimeOfFile(remotePathObj);
+                if(lastMod > remoteLastMod + 2){
+                    send = true;
                 }
-                if(syncAllowState == ALLOWED){
-                    sendChangeMsg(change);
-                    sendEndSync();
-                    localDir.popNextChange();
-                }else{
-                    localUpdating = false;
-                    syncAllowState = WAIT;
-                }
+            }
+            if(send){
+                sendFile(obj, remotePathObj);
+            }
+        }else{
+            if(remoteDir.hasFile(remotePathObj)){
+                sendDeleteFile(remotePathObj);
+            }
+        }
+    }else{
+        if(change.isUp){
+            if(!remoteDir.hasDir(remotePathObj)){
+                sendMkdir(remotePathObj);
+            }
+        }else{
+            if(remoteDir.hasDir(remotePathObj)){
+                sendDeleteDir(remotePathObj);
             }
         }
     }
 }
 
-void SyncBot::updateLocalDirIfNotBusy(){
-    if(localDir.isUpdating() == false){
-        localDir.updateFilesAndDirs(true);
-    }
-}
-
-void SyncBot::sendChangeMsg(string change){
+/*void SyncBot::sendChangeMsg(string change){
     list<string> words = splitStrInList(change);
     string op = words.front();
     bool up, file;
@@ -330,44 +467,7 @@ void SyncBot::sendChangeMsg(string change){
             }
         }
     }
-}
-
-void SyncBot::sendDirRemove(string dir){
-    socket->sendMsg(string("dir rm ") + dir);
-}
-
-void SyncBot::sendDirAdd(string dir){
-    socket->sendMsg(string("dir add ") + dir);
-}
-
-void SyncBot::sendFileRemove(string file){
-    socket->sendMsg(string("file rm ") + file);
-}
-
-void SyncBot::sendFileAdd(string file, time_t lastMod){
-    socket->sendMsg(string("file up ") + file + string(" ") + to_string(lastMod));
-}
-
-void SyncBot::sendStartSync(){
-    localUpdating = true;
-    syncAllowState = WAIT;
-    socket->sendMsg("start-sync");
-}
-
-void SyncBot::sendAllowSync(){
-    remoteUpdating = true;
-    socket->sendMsg("allow-sync");
-}
-
-void SyncBot::sendDenySync(){
-    socket->sendMsg("deny-sync");
-}
-
-void SyncBot::sendEndSync(){
-    localUpdating = false;
-    syncAllowState = WAIT;
-    socket->sendMsg("end-sync");
-}
+}*/
 
 void SyncBot::sendMkdir(string dir){
     socket->sendMsg(string("mkdir ") + dir);
@@ -398,6 +498,10 @@ void SyncBot::sendDeleteFile(string file){
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::treatMessagesCycle(){
     while(!finishFlag){
@@ -426,6 +530,8 @@ void SyncBot::treatMessage(string message){
             allowedToSync();
         }else if(op == "deny-sync" && words.size() == 0){
             denyedToSync();
+        }else if(op == "shared-all" && words.size() == 0){
+            remoteSharedAll();
         }else if(op == "login" && words.size() == 1){
             login(words.front());
         }else if(op == "mkdir" && words.size() == 1){
@@ -469,6 +575,8 @@ void SyncBot::treatMessage(string message){
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+
 void SyncBot::login(string password){
     std::lock_guard<std::mutex> guard(loginMutex);
     //log("SYNC-BOT", string("Treating: login ") + password);
@@ -511,14 +619,21 @@ void SyncBot::fileRemove(string file){
     remoteDir.rmFile(file);
 }
 
+void SyncBot::remoteSharedAll(){
+    log("SYNC-BOT", string("Remote shared all initial information."));
+    remoteSharedInitialInfo = true;
+}
+
 void SyncBot::remoteStartSync(){
     log("SYNC-BOT", string("Remote requires to start sync"));
-    //remoteUpdating = true;
-    if(localUpdating){
-        sendDenySync();
-    }else{
-        sendAllowSync();
-    }
+    //if(localUpdating){
+    //    sendDenySync();
+    //}else{
+    log("SYNC-BOT", string("Trying to lock on remoteStartSync()"));
+    syncLock.lock();
+    log("SYNC-BOT", string("Locking on remoteStartSync()"));
+    sendAllowSync();
+    //}
 }
 
 void SyncBot::allowedToSync(){
@@ -533,7 +648,9 @@ void SyncBot::denyedToSync(){
 
 void SyncBot::remoteEndSync(){
     log("SYNC-BOT", string("Remote ending sync"));
-    remoteUpdating = false;
+    log("SYNC-BOT", string("Unlocking on remoteEndSync()"));
+    syncLock.unlock();
+    //remoteUpdating = false;
 }
 
 void SyncBot::mkdir(string message, string dir){

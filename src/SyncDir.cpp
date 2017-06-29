@@ -203,7 +203,20 @@ void SyncDir::finish(){
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-bool SyncDir::searchAndEraseElementInListContaining(list<string> &items, string s){
+void SyncDir::eraseChangesWhichInvolve(list<SyncChange> items, string path){
+    auto i = items.begin();
+    while (i != items.end())
+    {
+        SyncChange value = *i;
+        if (path == value.path){
+            i = items.erase(i);
+        }else{
+            ++i;
+        }
+    }
+}
+
+/*bool SyncDir::searchAndEraseElementInListContaining(list<string> &items, string s){
     bool erased = false;
     auto i = items.begin();
     while (i != items.end())
@@ -218,32 +231,33 @@ bool SyncDir::searchAndEraseElementInListContaining(list<string> &items, string 
         }
     }
     return erased;
-}
+}*/
 
-void SyncDir::putChangeMessage(string type, string file, bool fileMsg){
+void SyncDir::putChangeMessage(SyncChange change){
     std::lock_guard<std::mutex> guard(addMsgMutex);
-    string msg = type + string(" ") + file;
-    if(fileMsg){
-        searchAndEraseElementInListContaining(fileChanges, string("-file ") + file);
-        fileChanges.push_back(msg);
+    if(change.isFile){
+        eraseChangesWhichInvolve(fileChanges, change.path);
+        //searchAndEraseElementInListContaining(fileChanges, string("-file ") + file);
+        fileChanges.push_back(change);
     }else{
-        searchAndEraseElementInListContaining(dirChanges, string("-dir ") + file);
-        dirChanges.push_back(msg);
+        eraseChangesWhichInvolve(dirChanges, change.path);
+        //searchAndEraseElementInListContaining(dirChanges, string("-dir ") + file);
+        dirChanges.push_back(change);
     }
 }
 
-vector<string> SyncDir::popChanges(){
+vector<SyncChange> SyncDir::popChanges(){
     std::lock_guard<std::mutex> guard(addMsgMutex);
-    vector<string> changes;
+    vector<SyncChange> changes;
     auto i = dirChanges.begin();
     while(i != dirChanges.end()){
-        string value = *i;
+        SyncChange value = *i;
         changes.push_back(value);
         i++;
     }
     auto j = fileChanges.begin();
     while(j != fileChanges.end()){
-        string value = *j;
+        SyncChange value = *j;
         changes.push_back(value);
         j++;
     }
@@ -254,7 +268,7 @@ vector<string> SyncDir::popChanges(){
     return changes;
 }
 
-string SyncDir::nextChange(){
+SyncChange SyncDir::nextChange(){
     std::lock_guard<std::mutex> guard(addMsgMutex);
 
     if(dirChanges.size() > 0){
@@ -262,7 +276,11 @@ string SyncDir::nextChange(){
     }else if(fileChanges.size() > 0){
         return *fileChanges.begin();
     }else{
-        return "";
+        SyncChange c;
+        c.isUp = false;
+        c.isFile = false;
+        c.path = "";
+        return c;
     }
 }
 
@@ -307,4 +325,36 @@ void SyncDir::updateCycle(){
             std::this_thread::sleep_for(std::chrono::milliseconds(autoUpdateDelayMS));
         }
     }
+}
+
+SyncChange SyncDir::getUpFileChange(string path){
+    SyncChange c;
+    c.isUp = true;
+    c.isFile = true;
+    c.path = path;
+    return c;
+}
+
+SyncChange SyncDir::getRmFileChange(string path){
+    SyncChange c;
+    c.isUp = false;
+    c.isFile = true;
+    c.path = path;
+    return c;
+}
+
+SyncChange SyncDir::getUpDirChange(string path){
+    SyncChange c;
+    c.isUp = true;
+    c.isFile = false;
+    c.path = path;
+    return c;
+}
+
+SyncChange SyncDir::getRmDirChange(string path){
+    SyncChange c;
+    c.isUp = false;
+    c.isFile = false;
+    c.path = path;
+    return c;
 }

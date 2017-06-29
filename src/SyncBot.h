@@ -23,7 +23,8 @@ enum SyncBotState{
     SLEEP = 0,
     WAITING = 1,
     AUTH = 2,
-    SYNC = 3
+    SHARE = 3,
+    SYNC = 4
 };
 
 enum AuthState{
@@ -66,6 +67,7 @@ protected:
     void update();
 
     void sleeping();
+    void updateLocalDirIfNotBusy();
 
     void waiting();
 
@@ -77,9 +79,8 @@ protected:
     bool sendAuthMessage();
     bool hasRemoteAuthorization();
 
-    void sync();
-    void updateLocalDirIfNotBusy();
-    void sendChangeMsg(string change);
+    void share();
+    void sendChangeInfo(SyncChange change);
     void sendDirRemove(string dir);
     void sendDirAdd(string dir);
     void sendFileRemove(string file);
@@ -88,11 +89,14 @@ protected:
     void sendAllowSync();
     void sendDenySync();
     void sendEndSync();
+    void sendSharedAll();
+
+    void sync();
+    void sendChange(SyncChange change);
     void sendDeleteFile(string file);
     void sendFile(string localFile, string remoteFile);
     void sendDeleteDir(string dir);
     void sendMkdir(string dir);
-    
     /*//Sync all info
     void syncInfo();
     //Sync only dir info
@@ -120,6 +124,7 @@ protected:
     void dir(string op, string dir);
     void fileUp(string file, time_t lastMod);
     void fileRemove(string file);
+    void remoteSharedAll();
     void remoteStartSync();
     void allowedToSync();
     void denyedToSync();
@@ -129,7 +134,10 @@ protected:
 
     bool isServer;
     //receiving update from remote / sending update to remote
-    bool remoteUpdating, localUpdating;
+    //bool remoteUpdating, localUpdating;
+    //mutex localUpdating, remoteUpdating;
+    bool sharedInitialInfo, remoteSharedInitialInfo;
+    mutex syncLock;
     //port for local socket
     int hostPort;
     string hostAddress;
@@ -170,6 +178,8 @@ protected:
         file up [file-name] [last-mod-time]
     Remove file from remote:
         file rm [file-name]
+    Signal to remote that all the initial info has been shared:
+        shared-all
     Init micro-sync:
         start-sync
     Sync allowed:
@@ -184,6 +194,7 @@ protected:
         rm -Rf [dir]
     Delete file:
         rm -f [file]
+    
 */
 };
 
