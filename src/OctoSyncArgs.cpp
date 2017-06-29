@@ -8,29 +8,33 @@ const string OctoSyncArgs::hostPortArgName = "hostPort";
 const string OctoSyncArgs::localPasswdArgName = "localPasswd";
 const string OctoSyncArgs::hostPasswdArgName = "hostPasswd";
 const string OctoSyncArgs::scpPortArgName = "scpPort";
+const string OctoSyncArgs::loggingLevelArgName = "logLevel";
 
 const string OctoSyncArgs::configFileName = ".octoConfig";
 
 OctoSyncArgs::OctoSyncArgs(int argc, char * argv[])
 : ArgParser(argc, argv)
 {
-    sync = operation == syncCmdArgName;
-    host = operation == hostCmdArgName;
-    if(!sync && !host){
-        if(helpOperation()){
-            printHelp();
+    if(!helpOperation()){
+        sync = operation == syncCmdArgName;
+        host = operation == hostCmdArgName;
+        if(!sync && !host){
+            
+            error("OCTO-SYNC-ARGS", string("Invalid operation: ") + operation);
+            success = false;
+        }else{
+            if(args.find(syncCmdArgName) != args.end()){
+                syncDir = args[syncCmdArgName];
+            }
+            readValuesFromConfigFile();
+            success = findArgs();
+            //printGivenArgs();
+            writeValuesToConfigFile();
         }
-        log("OCTO-SYNC-ARGS", string("Invalid operation: ") + operation);
-        success = false;
+        
     }else{
-        if(args.find(syncCmdArgName) != args.end()){
-            syncDir = args[syncCmdArgName];
-        }
-        readValuesFromConfigFile();
-        success = findArgs();
+        printHelp();
     }
-    printGivenArgs();
-    writeValuesToConfigFile();
 }
 
 void OctoSyncArgs::readValuesFromConfigFile(){
@@ -56,6 +60,7 @@ void OctoSyncArgs::readValuesFromConfigFile(){
             inputStream >> hostPasswd;
             inputStream >> hostPort;
             inputStream >> scpPort;
+            inputStream >> loggingLevel;
             inputStream.close();
         }
     }
@@ -80,6 +85,7 @@ void OctoSyncArgs::writeValuesToConfigFile(){
         outputStream << hostPasswd << endl;
         outputStream << hostPort << endl;
         outputStream << scpPort << endl;
+        outputStream << loggingLevel << endl;
         outputStream.close();
     }
 
@@ -106,16 +112,20 @@ bool OctoSyncArgs::findArgs(){
         scpPort = stoi(args[scpPortArgName]);
     }
 
+    if(args.find(loggingLevelArgName) != args.end()){
+        loggingLevel = stoi(args[loggingLevelArgName]);
+    }
+
     return validateArgs();
 }
 
 bool OctoSyncArgs::validateArgs(){
     /*if(syncDir == ""){
-        log("OCTO-SYNC-ARGS", string("No synchronization directory defined"));
+        error("OCTO-SYNC-ARGS", string("No synchronization directory defined"));
         return false;
     }*/
     if(hostAddress == "none"){
-        log("OCTO-SYNC-ARGS", string("No host address defined"));
+        error("OCTO-SYNC-ARGS", string("No host address defined"));
         return false;
     }
     if(localPasswd == "none"){
@@ -125,7 +135,7 @@ bool OctoSyncArgs::validateArgs(){
         if(passwd != ""){
             localPasswd = passwd;
         }else{
-            log("OCTO-SYNC-ARGS", string("No local password defined"));
+            error("OCTO-SYNC-ARGS", string("No local password defined"));
             return false;
         }
     }
@@ -136,12 +146,12 @@ bool OctoSyncArgs::validateArgs(){
         if(passwd != ""){
             hostPasswd = passwd;
         }else{
-            log("OCTO-SYNC-ARGS", string("No host password defined"));
+            error("OCTO-SYNC-ARGS", string("No host password defined"));
             return false;
         }
     }
     if(hostPort == -1){
-        log("OCTO-SYNC-ARGS", string("No host port defined"));
+        error("OCTO-SYNC-ARGS", string("No host port defined"));
         return false;
     }
     //if(scpPort != -1){
@@ -164,7 +174,7 @@ void OctoSyncArgs::printGivenArgs(){
         cout << "Host address: \n\t" << hostAddress << endl; 
     }
     if(localPasswd != "none"){
-        cout << "Local password: \n\t" << localPasswd << endl; 
+        cout << "Local password: \n\t ***"  << endl; 
     }
     if(hostPasswd != "none"){
         cout << "Host password: \n\t" << hostPasswd << endl; 
@@ -174,6 +184,9 @@ void OctoSyncArgs::printGivenArgs(){
     }
     if(scpPort != -1){
         cout << "SCP port: \n\t" << scpPort << endl; 
+    }
+    if(loggingLevel != 7){
+        cout << "Logging level: \n\t" << loggingLevel << endl; 
     }
 }
 
@@ -196,7 +209,9 @@ void OctoSyncArgs::printHelp(){
     << hostPasswdArgName << endl
     << "\t" << "* Server Password of the host. Used to login;" << endl
     << scpPortArgName << endl
-    << "\t" << "Specify a port for the scp command;" << endl;
+    << "\t" << "Specify a port for the scp command. If not specified, the default will be used;" << endl
+    << loggingLevelArgName << endl
+    << "\t" << "Minimum level of log messages. A lower value means more output. Default = 7;" << endl;
 }
 
 char getch(){

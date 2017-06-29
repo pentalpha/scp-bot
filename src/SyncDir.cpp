@@ -76,7 +76,7 @@ string SyncDir::getNoticeToLogIfRemote(){
 void SyncDir::addFile(FileInfo file){
     std::lock_guard<std::mutex> guard(updateMutex);
     files[file.path] = file;
-    log("SYNC-DIR", string("Added") + getNoticeToLogIfRemote() + file.path
+    log(5,"SYNC-DIR", string("Added") + getNoticeToLogIfRemote() + file.path
         + string(" ") + timeToChar(file.lastModification));
     if(!remote){
         upFileMsg(file.path);
@@ -86,7 +86,7 @@ void SyncDir::modFile(string filePath, time_t newModTime){
     std::lock_guard<std::mutex> guard(updateMutex);
     time_t lastMod = files[filePath].lastModification;
     files[filePath].lastModification = newModTime;
-    log("SYNC-DIR", filePath + getNoticeToLogIfRemote() + string("has been altered: ")
+    log(5,"SYNC-DIR", filePath + getNoticeToLogIfRemote() + string("has been modified: ")
     + timeToChar(newModTime) + string(" > ") + timeToChar(lastMod));
     if(!remote){
         upFileMsg(filePath);
@@ -95,7 +95,7 @@ void SyncDir::modFile(string filePath, time_t newModTime){
 void SyncDir::rmFile(string filePath){
     std::lock_guard<std::mutex> guard(updateMutex);
     files.erase(filePath);
-    log("SYNC-DIR", string("Removed") + getNoticeToLogIfRemote() + filePath);
+    log(5,"SYNC-DIR", string("Removed") + getNoticeToLogIfRemote() + filePath);
     if(!remote){
         rmFileMsg(filePath);
     }
@@ -104,7 +104,7 @@ void SyncDir::rmFile(string filePath){
 void SyncDir::addDir(string dir){
     std::lock_guard<std::mutex> guard(updateMutex);
     subDirs.insert(dir);
-    log("SYNC-DIR", string("New folder:") + getNoticeToLogIfRemote() + dir);
+    log(5,"SYNC-DIR", string("New folder:") + getNoticeToLogIfRemote() + dir);
     if(!remote){
         upDirMsg(dir);
     }
@@ -112,7 +112,7 @@ void SyncDir::addDir(string dir){
 void SyncDir::rmDir(string dirPath){
     std::lock_guard<std::mutex> guard(updateMutex);
     subDirs.erase(dirPath);
-    log("SYNC-DIR",string("Removed folder:") + getNoticeToLogIfRemote() + dirPath);
+    log(5,"SYNC-DIR",string("Removed folder:") + getNoticeToLogIfRemote() + dirPath);
     if(!remote){
         rmDirMsg(dirPath);
     }
@@ -166,7 +166,7 @@ void SyncDir::updateModTimes(){
         if(lastMod > fileEntry.second.lastModification + 2){
             modFile(fileEntry.first, lastMod);
         }else{
-            //log("SYNC-DIR", fileEntry.second.path + string(" remains the same."));
+            log(0, "SYNC-DIR", fileEntry.second.path + string(" remains the same."));
         }
     }
 }

@@ -12,7 +12,7 @@ ArgParser::ArgParser(int argc, char * argv[]){
             string arg = rawArgs[i];
             pair<string, string> x = separateRawArg(arg);
             if(x.first == "ERROR"){
-                log("ARG-PARSER", string("'") + arg + string("' can not be parsed."));
+                error("ARG-PARSER", string("'") + arg + string("' can not be parsed."));
             }else{
                 args[x.first] = x.second;
             }

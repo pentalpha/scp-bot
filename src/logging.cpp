@@ -2,10 +2,20 @@
 
 std::mutex loggingMutex;
 
-void log(std::string origin, std::string message){
+int loggingLevelRequired = 0;
+
+void setLogLevel(int newLogLevel){
     loggingMutex.lock();
-    std::clog << "[" << origin << "] " << message << std::endl;
+    loggingLevelRequired = newLogLevel;
     loggingMutex.unlock();
+}
+
+void log(int logLevel, std::string origin, std::string message){
+    if(logLevel >= loggingLevelRequired){
+        loggingMutex.lock();
+        std::clog << "[" << origin << "] " << message << std::endl;
+        loggingMutex.unlock();
+    }
 }
 
 void error(std::string origin, std::string message){

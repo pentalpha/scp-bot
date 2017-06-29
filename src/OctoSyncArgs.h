@@ -31,6 +31,7 @@ public:
     int hostPort = DEFAULT_HOST_PORT;
     string hostPasswd = "none";
     int scpPort = -1;
+    int loggingLevel = 7;
 
     static const string syncCmdArgName;
     static const string hostCmdArgName;
@@ -40,6 +41,7 @@ public:
     static const string localPasswdArgName;
     static const string hostPasswdArgName;
     static const string scpPortArgName;
+    static const string loggingLevelArgName;
 
     /*
     Sequence of values:
@@ -52,6 +54,7 @@ public:
     hostPasswd
     hostPort
     scpPort
+    loggingLevel
     */
     static const string configFileName;
     void readValuesFromConfigFile();

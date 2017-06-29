@@ -3,6 +3,8 @@
 SyncBot::SyncBot(OctoSyncArgs args)
 : localDirName(getAbsolutePath(args.syncDir)), localDir(getAbsolutePath(args.syncDir), true), remoteDir()
 {
+    setLogLevel(args.loggingLevel);
+
     isServer = args.host;
     localDirName = getAbsolutePath(args.syncDir);
     remoteDirName = "";
@@ -69,7 +71,7 @@ Socket* SyncBot::makeSocket(string ip, int port, bool server){
 }
 
 bool SyncBot::run(){
-    log("SYNC-BOT", "Running SyncBot and opening for new connections");
+    log(6,"SYNC-BOT", "Running SyncBot and opening for new connections");
     bool started = socket->startTransaction();
     if(started){
         socket->waitToFinish();
@@ -86,10 +88,10 @@ bool SyncBot::run(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::updateCycle(){
-    //log("SYNC-BOT", "Starting to update");
+    log(2,"SYNC-BOT", "Starting to update");
     while(!finishFlag){
         update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 
@@ -119,7 +121,7 @@ void SyncBot::sleeping(){
     //cout << "asleep\n";
     if(!(socket->isAsleep())){
         state = WAITING;
-        log("SYNC-BOT", "SyncBot is now WAITING");
+        log(7,"SYNC-BOT", "SyncBot is now WAITING for a new connection");
     }else{
         updateLocalDirIfNotBusy();
     }
@@ -138,17 +140,16 @@ void SyncBot::updateLocalDirIfNotBusy(){
 
 void SyncBot::waiting(){
     if(socket->isConnected()){
-        //cout << "not connected\n";
         state = AUTH;
-        log("SYNC-BOT", "SyncBot is now in AUTH");
+        
         authState = NOT_STARTED;
         if(isServer){
             remoteAddress = ((Server*)socket)->clientAddress;
-            log("SYNC-BOT", string("Remote address is ") + remoteAddress);
+            
         }
-        //log("SYNC-BOT", "SyncBot has NOT_STARTED AUTH");
+        log(1, "SYNC-BOT", string("Remote address is ") + remoteAddress);
+        log(6, "SYNC-BOT", string("SyncBot is now authenticating with ") + remoteAddress);
     }else{
-        //cout << "not connected\n";
         updateLocalDirIfNotBusy();
     }
 }
@@ -159,22 +160,22 @@ void SyncBot::waiting(){
 void SyncBot::authentication(){
     if (authState == NOT_STARTED){
         if(isServer && someoneTryedToLogin()){
-            //log("SYNC-BOT", "Someone tryed to login on server");
+            //log(3,"SYNC-BOT", "Someone tryed to login on server");
             if(correctServerPassword()){
-                log("SYNC-BOT-HOST", "Sync client logged in to server");
+                log(4, "SYNC-BOT-HOST", "Sync client logged in to server");
                 bool sent = sendAuthMessage();
                 if(sent){
                     authState = WAITING_REMOTE_AUTH;
-                    log("SYNC-BOT-HOST", "SyncBot is now WAITING_REMOTE_AUTH");
+                    log(4, "SYNC-BOT-HOST", "SyncBot is now WAITING_REMOTE_AUTH");
                 }
             }else{
-                log("SYNC-BOT-HOST", "Sync client tryed to login with incorrect password");
+                log(4, "SYNC-BOT-HOST", "Sync client tryed to login with incorrect password");
             }
         }else if(!isServer){
             bool sent = sendLoginMessage();
             if(sent){
                 authState = WAITING_REMOTE_AUTH;
-                log("SYNC-BOT-CLIENT", "SyncBot is now WAITING_REMOTE_AUTH");
+                log(4, "SYNC-BOT-CLIENT", "SyncBot is now WAITING_REMOTE_AUTH");
             }
         }
     }else if (authState == WAITING_REMOTE_AUTH){
@@ -183,16 +184,16 @@ void SyncBot::authentication(){
                 bool sent = sendAuthMessage();
                 if(sent){
                     authState = AUTHORIZED;
-                    log("SYNC-BOT-CLIENT", "SyncBot is now AUTHORIZED");
+                    log(4, "SYNC-BOT-CLIENT", "SyncBot is now AUTHORIZED");
                 }
             }else{
                 authState = AUTHORIZED;
-                log("SYNC-BOT-HOST", "SyncBot is now AUTHORIZED");
+                log(4, "SYNC-BOT-HOST", "SyncBot is now AUTHORIZED");
             }
         }
     }else if(authState == AUTHORIZED){
         state = SHARE;
-        log("SYNC-BOT", "SyncBot is now in SHARE");
+        log(7, "SYNC-BOT", "SyncBot is now in Information Sharing Mode");
     }
 }
 
@@ -216,7 +217,7 @@ bool SyncBot::sendLoginMessage(){
     msg += "login ";
     msg += hostPasswd;
     msg += "\n";
-    //log("SYNC-BOT", string("Trying to send login message: ") + msg);
+    log(2, "SYNC-BOT", string("Trying to send login message: ") + msg);
     return socket->sendMsg(msg);
 }
 
@@ -233,7 +234,7 @@ bool SyncBot::sendAuthMessage(){
         msg += to_string(scpPort);
     }
     msg += "\n";
-    //log("SYNC-BOT", string("Trying to send auth message: ") + msg);
+    log(2, "SYNC-BOT", string("Trying to send auth message: ") + msg);
     return socket->sendMsg(msg);
 }
 
@@ -245,14 +246,14 @@ bool SyncBot::hasRemoteAuthorization(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::share(){
-    log("SYNC-BOT", string("Trying to lock on share()"));
+    log(1,"SYNC-BOT", string("Trying to lock on share()"));
     syncLock.lock();
-    log("SYNC-BOT", string("Locking on share()"));
+    log(1,"SYNC-BOT", string("Locking on share()"));
     updateLocalDirIfNotBusy();
     if(localDir.hasChanges()){
         SyncChange change = localDir.nextChange();
         if(change.path != ""){
-            log("SYNC-BOT", string("Going try share: ") 
+            log(3,"SYNC-BOT", string("Going try share: ") 
                 + change.path);
             sendStartSync();
             while(syncAllowState == WAIT){
@@ -271,9 +272,9 @@ void SyncBot::share(){
     }
     if(sharedInitialInfo && remoteSharedInitialInfo){
         state = SYNC;
-        log("SYNC-BOT", "SyncBot is now in SYNC");
+        log(7, "SYNC-BOT", "SyncBot is now in File Synchronization Mode");
     }
-    log("SYNC-BOT", string("Unlocking on share()"));
+    log(1,"SYNC-BOT", string("Unlocking on share()"));
     syncLock.unlock();
 }
 
@@ -339,14 +340,14 @@ void SyncBot::sendSharedAll(){
 //////////////////////////////////////////////////////////////////////////////////
 
 void SyncBot::sync(){
-    log("SYNC-BOT", string("Trying to lock on sync()"));
+    log(1,"SYNC-BOT", string("Trying to lock on sync()"));
     syncLock.lock();
-    log("SYNC-BOT", string("Locking on sync()"));
+    log(1,"SYNC-BOT", string("Locking on sync()"));
     updateLocalDirIfNotBusy();
     if(localDir.hasChanges()){
         SyncChange change = localDir.nextChange();
         if(change.path != ""){
-            log("SYNC-BOT", string("Going try sync: ") 
+            log(3, "SYNC-BOT", string("Going try sync: ") 
                 + change.path);
             sendStartSync();
             while(syncAllowState == WAIT){
@@ -362,7 +363,7 @@ void SyncBot::sync(){
             sendEndSync();
         }
     }
-    log("SYNC-BOT", string("Unlocking on sync()"));
+    log(1,"SYNC-BOT", string("Unlocking on sync()"));
     syncLock.unlock();
 }
 
@@ -487,9 +488,10 @@ void SyncBot::sendFile(string localFile, string remoteFile){
     cmd += localFile + string(" ");
     cmd += remoteUserName + string("@") + remoteAddress;
     cmd += string(":") + remoteFile;
-    log("SYNC-BOT", string("Transfering with: ") + cmd);
+    //log(1,"SYNC-BOT", string("Transfering with: ") + cmd);
+    log(8, "SYNC-BOT", string("Starting file trasfer of ") + localFile);
     system(cmd.c_str());
-    log("SYNC-BOT", "Finished trasfer");
+    log(8, "SYNC-BOT", string("Finished file trasfer of ") + localFile);
 }
 
 void SyncBot::sendDeleteFile(string file){
@@ -579,12 +581,12 @@ void SyncBot::treatMessage(string message){
 
 void SyncBot::login(string password){
     std::lock_guard<std::mutex> guard(loginMutex);
-    //log("SYNC-BOT", string("Treating: login ") + password);
+    log(3,"SYNC-BOT", string("Treating: login ") + password);
     hostPasswdTry = password;
 }
 
 void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, int transferPort){
-    //log("SYNC-BOT", string("Treating: auth ") + userPassword + string(" ") + remoteSyncDir);
+    log(3,"SYNC-BOT", string("Treating: auth ") + userPassword + string(" ") + remoteSyncDir);
     if(transferPort > 0){
         remoteScpPort = transferPort;
     }
@@ -593,11 +595,11 @@ void SyncBot::auth(string userPassword, string userName, string remoteSyncDir, i
     remoteDirName = remoteSyncDir;
     remoteUserName = userName;
     authByRemote = true;
-    //log("SYNC-BOT", "Treated auth and authorized");
+    log(3,"SYNC-BOT", "Treated auth and authorized");
 }
 
 void SyncBot::dir(string op, string dir){
-    //log("SYNC-BOT", string("Adding directory ") + op + string(" ") + dir);
+    log(3,"SYNC-BOT", string("Treating: Adding directory ") + op + string(" ") + dir);
     if(op == "add"){
         remoteDir.addDir(dir);
     }else if(op == "rm"){
@@ -606,7 +608,7 @@ void SyncBot::dir(string op, string dir){
 }
 
 void SyncBot::fileUp(string file, time_t lastMod){
-    log("SYNC-BOT", string("Updating file to remote SyncDir: ") 
+    log(4,"SYNC-BOT", string("Added file from remote: ") 
         + file + string(" ") + timeToChar(lastMod));
     FileInfo info;
     info.path = file;
@@ -615,50 +617,50 @@ void SyncBot::fileUp(string file, time_t lastMod){
 }
 
 void SyncBot::fileRemove(string file){
-    log("SYNC-BOT", string("Removing file from remote SyncDir: ") + file);
+    log(4,"SYNC-BOT", string("Removing file from remote SyncDir: ") + file);
     remoteDir.rmFile(file);
 }
 
 void SyncBot::remoteSharedAll(){
-    log("SYNC-BOT", string("Remote shared all initial information."));
+    log(4,"SYNC-BOT", string("Remote shared all initial information."));
     remoteSharedInitialInfo = true;
 }
 
 void SyncBot::remoteStartSync(){
-    log("SYNC-BOT", string("Remote requires to start sync"));
+    log(4,"SYNC-BOT", string("Remote requires to start sync"));
     //if(localUpdating){
     //    sendDenySync();
     //}else{
-    log("SYNC-BOT", string("Trying to lock on remoteStartSync()"));
+    log(1,"SYNC-BOT", string("Trying to lock on remoteStartSync()"));
     syncLock.lock();
-    log("SYNC-BOT", string("Locking on remoteStartSync()"));
+    log(1,"SYNC-BOT", string("Locking on remoteStartSync()"));
     sendAllowSync();
     //}
 }
 
 void SyncBot::allowedToSync(){
-    log("SYNC-BOT", string("Allowed to do sync"));
+    log(4,"SYNC-BOT", string("Allowed to do sync"));
     syncAllowState = ALLOWED;
 }
 
 void SyncBot::denyedToSync(){
-    log("SYNC-BOT", string("Denyed to do sync"));
+    log(4,"SYNC-BOT", string("Denyed to do synchronization"));
     syncAllowState = DENYED;
 }
 
 void SyncBot::remoteEndSync(){
-    log("SYNC-BOT", string("Remote ending sync"));
-    log("SYNC-BOT", string("Unlocking on remoteEndSync()"));
+    log(4,"SYNC-BOT", string("Remote ending sync"));
+    log(1,"SYNC-BOT", string("Unlocking on remoteEndSync()"));
     syncLock.unlock();
     //remoteUpdating = false;
 }
 
 void SyncBot::mkdir(string message, string dir){
-    log("SYNC-BOT", string("Making directory ") + dir);
+    log(8,"SYNC-BOT", string("Making directory ") + dir);
     system(message.c_str());
 }
 
 void SyncBot::erase(string message, string obj){
-    log("SYNC-BOT", string("Erasing ") + obj);
+    log(8,"SYNC-BOT", string("Erasing ") + obj);
     system(message.c_str());
 }
