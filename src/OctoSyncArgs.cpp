@@ -193,21 +193,21 @@ void OctoSyncArgs::printGivenArgs(){
 void OctoSyncArgs::printHelp(){
     cout << syncCmdArgName << " or " << hostCmdArgName << endl
     << "\t" << "The operation to perform: either host or sync;" << endl
+    << "\t" << "The host must be the first instance to be executed, it will wait for a connection;" << endl
+    << "\t" << "The sync connects to a host that is waiting for a new connection;" << endl
     << "Use [arg-name]=[value] to pass arguments:" << endl
     << "* = obrigatory" << endl
-    << "# = obrigatory to host" << endl
-    << "$ = obrigatory to sync" << endl
     << syncDirArgName << endl
-    << "\t" << "* The directory to synchronize;" << endl
+    << "\t" << " The directory to synchronize. Default = ./;" << endl
     << hostAddressArgName << endl
     << "\t" << "* Hosting machine ip;" << endl
     << hostPortArgName << endl
-    << "\t" << "* Hosting machine port;" << endl
+    << "\t" << " Hosting machine port. Default = " << DEFAULT_HOST_PORT << ";" << endl
     << localPasswdArgName << endl
-    << "\t" << "* Local machine (sync or host) user password."
+    << "\t" << " Local machine (sync or host) user password."
             << " The remote will use this password on the scp command;" << endl
     << hostPasswdArgName << endl
-    << "\t" << "* Server Password of the host. Used to login;" << endl
+    << "\t" << "* Server password of the host. Used to login;" << endl
     << scpPortArgName << endl
     << "\t" << "Specify a port for the scp command. If not specified, the default will be used;" << endl
     << loggingLevelArgName << endl
