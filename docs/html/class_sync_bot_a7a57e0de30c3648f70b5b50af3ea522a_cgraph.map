@@ -1,0 +1,4 @@
+<map id="SyncBot::updateLocalDirIfNotBusy" name="SyncBot::updateLocalDirIfNotBusy">
+<area shape="rect" id="node2" href="$class_sync_dir.html#a4828053b45ac5f8092052db1b08c477e" title="SyncDir::isUpdating" alt="" coords="254,5,393,32"/>
+<area shape="rect" id="node3" href="$class_sync_dir.html#a3d4cc829a9a6e7a8f3f0e9a0f2429601" title="SyncDir::updateFilesAndDirs" alt="" coords="228,56,419,83"/>
+</map>

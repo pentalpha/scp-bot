@@ -1,0 +1,7 @@
+<map id="SyncDir::addFile" name="SyncDir::addFile">
+<area shape="rect" id="node2" href="$class_sync_bot.html#a67be338bc08283b0fd4f712c2548e022" title="SyncBot::fileUp" alt="" coords="186,5,301,32"/>
+<area shape="rect" id="node6" href="$class_sync_dir.html#a59ca696cd743a30916701a3c04cd87a4" title="SyncDir::getFilesSet" alt="" coords="172,56,315,83"/>
+<area shape="rect" id="node3" href="$class_sync_bot.html#ae7902623548c1a07be644484b1f1eeb4" title="SyncBot::treatMessage" alt="" coords="363,5,521,32"/>
+<area shape="rect" id="node4" href="$class_sync_bot.html#a5fa22fef69ea28078e2243c59ad60677" title="SyncBot::treatMessagesCycle" alt="" coords="569,5,769,32"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#afa71b8f6b118673c24fb155eb932b938" title="SyncBot::SyncBot" alt="" coords="817,5,948,32"/>
+</map>

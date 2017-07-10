@@ -1,0 +1,12 @@
+<map id="SyncBot::sendChange" name="SyncBot::sendChange">
+<area shape="rect" id="node2" href="$class_sync_dir.html#a863ad3ec3481fefb1cae2d311c3e8247" title="SyncDir::getFilePathWithout\lSyncDir" alt="" coords="207,5,395,47"/>
+<area shape="rect" id="node3" href="$class_sync_dir.html#a0ce47c6f40e0c87a9f161f845609d47d" title="SyncDir::getModTimeOfFile" alt="" coords="209,71,393,98"/>
+<area shape="rect" id="node4" href="$class_sync_dir.html#abb237d978ac793317dfbda07a2d40903" title="SyncDir::hasFile" alt="" coords="241,122,360,149"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#abad471f92ee08de1a934c558360a1067" title="SyncBot::sendFile" alt="" coords="236,173,365,199"/>
+<area shape="rect" id="node7" href="$class_sync_bot.html#aff6316cf5369009ace59d68a616ee114" title="SyncBot::sendDeleteFile" alt="" coords="217,223,384,250"/>
+<area shape="rect" id="node9" href="$class_sync_dir.html#a760e83e536b31dcaccec79e51a348069" title="SyncDir::hasDir" alt="" coords="243,274,358,301"/>
+<area shape="rect" id="node10" href="$class_sync_bot.html#a98d27db3cafe5da3d359774e798f5377" title="SyncBot::sendMkdir" alt="" coords="231,325,371,351"/>
+<area shape="rect" id="node11" href="$class_sync_bot.html#ae3c1f027eb62830ad6729919ab506fdd" title="SyncBot::sendDeleteDir" alt="" coords="219,375,382,402"/>
+<area shape="rect" id="node6" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="485,173,524,199"/>
+<area shape="rect" id="node8" href="$class_socket.html#aa035ac9346a7d5110acc112e1ae48745" title="Socket::sendMsg" alt="" coords="443,325,567,351"/>
+</map>

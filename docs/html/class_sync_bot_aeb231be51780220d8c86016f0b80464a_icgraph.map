@@ -1,0 +1,8 @@
+<map id="SyncBot::sendDirAdd" name="SyncBot::sendDirAdd">
+<area shape="rect" id="node2" href="$class_sync_bot.html#a91271151766787fc844f3415555f7237" title="SyncBot::sendChangeInfo" alt="" coords="201,31,376,57"/>
+<area shape="rect" id="node3" href="$class_sync_bot.html#ab9a687a7dea66891b14e3733510323bd" title="SyncBot::share" alt="" coords="424,5,536,32"/>
+<area shape="rect" id="node7" href="$class_sync_bot.html#ac3f235391d88d075ae503e4148f0ee23" title="SyncBot::sync" alt="" coords="426,56,534,83"/>
+<area shape="rect" id="node4" href="$class_sync_bot.html#a7d227134f81fed3f95521530eadc0c67" title="SyncBot::update" alt="" coords="584,31,703,57"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#aa37a42471724b844777f83252aa8f36a" title="SyncBot::updateCycle" alt="" coords="751,31,904,57"/>
+<area shape="rect" id="node6" href="$class_sync_bot.html#afa71b8f6b118673c24fb155eb932b938" title="SyncBot::SyncBot" alt="" coords="952,31,1083,57"/>
+</map>

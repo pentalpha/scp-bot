@@ -1,0 +1,9 @@
+<map id="SyncBot::authentication" name="SyncBot::authentication">
+<area shape="rect" id="node2" href="$class_sync_bot.html#ab97cd39f593ad24d67e39eb44cec3b4b" title="SyncBot::someoneTryedToLogin" alt="" coords="220,5,432,32"/>
+<area shape="rect" id="node3" href="$class_sync_bot.html#aa78235a98b2e4e2070bfb4b43a2858e1" title="SyncBot::correctServerPassword" alt="" coords="218,56,434,83"/>
+<area shape="rect" id="node4" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="528,157,567,184"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#a0b88e39b7201954db461bf1dcca38eaa" title="SyncBot::sendAuthMessage" alt="" coords="232,157,420,184"/>
+<area shape="rect" id="node7" href="$class_sync_bot.html#a7c8e8479392026d6643b979026792a15" title="SyncBot::sendLoginMessage" alt="" coords="230,208,422,235"/>
+<area shape="rect" id="node8" href="$class_sync_bot.html#aa2a2f5080f39d13b88bd481b04056038" title="SyncBot::hasRemoteAuthorization" alt="" coords="215,259,437,285"/>
+<area shape="rect" id="node6" href="$class_socket.html#aa035ac9346a7d5110acc112e1ae48745" title="Socket::sendMsg" alt="" coords="485,208,609,235"/>
+</map>

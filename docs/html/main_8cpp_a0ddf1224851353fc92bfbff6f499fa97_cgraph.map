@@ -1,0 +1,7 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$class_sync_bot.html#a0dcfd5deaf0021c92b49ea1f20b5d0de" title="SyncBot::run" alt="" coords="104,56,203,83"/>
+<area shape="rect" id="node3" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="314,5,353,32"/>
+<area shape="rect" id="node4" href="$class_socket.html#abced757627f06b9296eff755db00ff94" title="Socket::startTransaction" alt="" coords="251,56,416,83"/>
+<area shape="rect" id="node5" href="$class_socket.html#a0800200e02b12a35cc3360688b2bca45" title="Socket::waitToFinish" alt="" coords="261,107,406,133"/>
+<area shape="rect" id="node6" href="$class_socket.html#a60c76a4c1e26192218d598b63cbb97b9" title="Socket::isConnected" alt="" coords="464,107,608,133"/>
+</map>

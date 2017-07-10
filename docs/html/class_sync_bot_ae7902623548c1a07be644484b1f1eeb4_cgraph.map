@@ -1,0 +1,25 @@
+<map id="SyncBot::treatMessage" name="SyncBot::treatMessage">
+<area shape="rect" id="node2" href="$class_sync_bot.html#a3c72529d3a55daebc15d7a99b3813334" title="SyncBot::splitStrInList" alt="" coords="225,31,378,57"/>
+<area shape="rect" id="node3" href="$class_sync_bot.html#ae728aeca6535d02dd2daf568a1f0d660" title="SyncBot::remoteStartSync" alt="" coords="212,81,391,108"/>
+<area shape="rect" id="node7" href="$class_sync_bot.html#a29e5086082b6546ad7dd3d350c2e65ff" title="SyncBot::remoteEndSync" alt="" coords="440,208,613,235"/>
+<area shape="rect" id="node8" href="$class_sync_bot.html#a62cf0dfce77a7b3b818d902f2292f101" title="SyncBot::allowedToSync" alt="" coords="442,259,611,285"/>
+<area shape="rect" id="node9" href="$class_sync_bot.html#a64c0d167367117c192a5a57bf59f07a7" title="SyncBot::denyedToSync" alt="" coords="443,309,610,336"/>
+<area shape="rect" id="node10" href="$class_sync_bot.html#a783fb27a0003ac60537e92f2e9d52d3b" title="SyncBot::remoteSharedAll" alt="" coords="439,360,615,387"/>
+<area shape="rect" id="node11" href="$class_sync_bot.html#a1bb9bed12305775cda65bc6c4f17a60a" title="SyncBot::login" alt="" coords="248,411,355,437"/>
+<area shape="rect" id="node12" href="$class_sync_bot.html#aa97ddcecbd30d3c6a78282ed7d784492" title="SyncBot::mkdir" alt="" coords="245,537,357,564"/>
+<area shape="rect" id="node13" href="$class_sync_bot.html#a0ec295661d2de5d02130e5c59f00c8b0" title="SyncBot::erase" alt="" coords="245,601,357,628"/>
+<area shape="rect" id="node14" href="$class_sync_bot.html#a0201c5f591ae2f6fa43cadd2662999b3" title="SyncBot::dir" alt="" coords="254,689,349,716"/>
+<area shape="rect" id="node17" href="$class_sync_bot.html#a67be338bc08283b0fd4f712c2548e022" title="SyncBot::fileUp" alt="" coords="244,816,359,843"/>
+<area shape="rect" id="node20" href="$class_sync_bot.html#a8e7b57e8a23468c7216f5d1c353a5c2a" title="SyncBot::fileRemove" alt="" coords="228,157,375,184"/>
+<area shape="rect" id="node22" href="$class_sync_bot.html#ad36347cbb95f2c5e488aef564f086bf6" title="SyncBot::auth" alt="" coords="249,461,354,488"/>
+<area shape="rect" id="node24" href="$logging_8cpp.html#ace6db5e7f2d63c35ae790c0d870ef4b5" title="error" alt="" coords="277,867,325,893"/>
+<area shape="rect" id="node4" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="705,436,744,463"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#a0282f6a7a03e1423f73e8cf80f46e12a" title="SyncBot::sendAllowSync" alt="" coords="441,5,612,32"/>
+<area shape="rect" id="node6" href="$class_socket.html#aa035ac9346a7d5110acc112e1ae48745" title="Socket::sendMsg" alt="" coords="663,5,787,32"/>
+<area shape="rect" id="node15" href="$class_sync_dir.html#a227443a12e54a1013f0c701e07de66ee" title="SyncDir::addDir" alt="" coords="469,765,584,792"/>
+<area shape="rect" id="node16" href="$class_sync_dir.html#a9404a72d297ea60af32aaf6a8bead00b" title="SyncDir::rmDir" alt="" coords="472,664,581,691"/>
+<area shape="rect" id="node18" href="$_file_utils_8cpp.html#af4def397db93c6286e70fb47aa4ee241" title="timeToChar" alt="" coords="679,892,770,919"/>
+<area shape="rect" id="node19" href="$class_sync_dir.html#a4194a09b602e8a724c2edf4a294fcfe3" title="SyncDir::addFile" alt="" coords="467,867,586,893"/>
+<area shape="rect" id="node21" href="$class_sync_dir.html#ab7ed3f6335a9473d6829c74071bb420a" title="SyncDir::rmFile" alt="" coords="470,107,583,133"/>
+<area shape="rect" id="node23" href="$class_sync_dir.html#a0481948c3e715fdf931e015b9b0c0618" title="SyncDir::setDir" alt="" coords="471,512,583,539"/>
+</map>

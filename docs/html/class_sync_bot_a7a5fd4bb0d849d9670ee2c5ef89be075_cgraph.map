@@ -1,0 +1,7 @@
+<map id="SyncBot::sleeping" name="SyncBot::sleeping">
+<area shape="rect" id="node2" href="$class_socket.html#a9d1897f754dc3619a58bfc0f916461be" title="Socket::isAsleep" alt="" coords="208,5,329,32"/>
+<area shape="rect" id="node3" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="249,56,288,83"/>
+<area shape="rect" id="node4" href="$class_sync_bot.html#a7a57e0de30c3648f70b5b50af3ea522a" title="SyncBot::updateLocalDirIf\lNotBusy" alt="" coords="181,107,356,149"/>
+<area shape="rect" id="node5" href="$class_sync_dir.html#a4828053b45ac5f8092052db1b08c477e" title="SyncDir::isUpdating" alt="" coords="430,89,569,116"/>
+<area shape="rect" id="node6" href="$class_sync_dir.html#a3d4cc829a9a6e7a8f3f0e9a0f2429601" title="SyncDir::updateFilesAndDirs" alt="" coords="404,140,595,167"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="Socket::startReceiving" name="Socket::startReceiving">
+<area shape="rect" id="node2" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="254,5,293,32"/>
+<area shape="rect" id="node3" href="$logging_8cpp.html#ace6db5e7f2d63c35ae790c0d870ef4b5" title="error" alt="" coords="249,56,297,83"/>
+<area shape="rect" id="node4" href="$class_socket.html#af7a7f9179d24001ff109e8c33fa2f936" title="Socket::finish" alt="" coords="222,107,325,133"/>
+<area shape="rect" id="node6" href="$class_string_queue.html#a8d3dbc0b8f403053b2f98a980d7b3359" title="StringQueue::push" alt="" coords="208,157,339,184"/>
+<area shape="rect" id="node5" href="$class_socket.html#aacc2ad59fc693055e3c0adcdbb4da209" title="Socket::closeSocket" alt="" coords="387,107,529,133"/>
+</map>

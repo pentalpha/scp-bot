@@ -1,0 +1,4 @@
+<map id="SyncBot::sendAuthMessage" name="SyncBot::sendAuthMessage">
+<area shape="rect" id="node2" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="284,5,323,32"/>
+<area shape="rect" id="node3" href="$class_socket.html#aa035ac9346a7d5110acc112e1ae48745" title="Socket::sendMsg" alt="" coords="241,56,365,83"/>
+</map>

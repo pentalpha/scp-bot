@@ -1,0 +1,9 @@
+<map id="SyncBot::updateLocalDirIfNotBusy" name="SyncBot::updateLocalDirIfNotBusy">
+<area shape="rect" id="node2" href="$class_sync_bot.html#a7a5fd4bb0d849d9670ee2c5ef89be075" title="SyncBot::sleeping" alt="" coords="228,5,356,32"/>
+<area shape="rect" id="node6" href="$class_sync_bot.html#a6795a690ae08f33b70841a3fcbc21dd3" title="SyncBot::waiting" alt="" coords="231,56,353,83"/>
+<area shape="rect" id="node7" href="$class_sync_bot.html#ab9a687a7dea66891b14e3733510323bd" title="SyncBot::share" alt="" coords="236,107,348,133"/>
+<area shape="rect" id="node8" href="$class_sync_bot.html#ac3f235391d88d075ae503e4148f0ee23" title="SyncBot::sync" alt="" coords="238,157,346,184"/>
+<area shape="rect" id="node3" href="$class_sync_bot.html#a7d227134f81fed3f95521530eadc0c67" title="SyncBot::update" alt="" coords="404,81,523,108"/>
+<area shape="rect" id="node4" href="$class_sync_bot.html#aa37a42471724b844777f83252aa8f36a" title="SyncBot::updateCycle" alt="" coords="571,81,724,108"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#afa71b8f6b118673c24fb155eb932b938" title="SyncBot::SyncBot" alt="" coords="772,81,903,108"/>
+</map>

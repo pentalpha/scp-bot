@@ -1,0 +1,8 @@
+<map id="SyncBot::sendChangeInfo" name="SyncBot::sendChangeInfo">
+<area shape="rect" id="node2" href="$class_sync_dir.html#a0ce47c6f40e0c87a9f161f845609d47d" title="SyncDir::getModTimeOfFile" alt="" coords="228,5,412,32"/>
+<area shape="rect" id="node3" href="$class_sync_bot.html#a3bef5d017f944672b9797b0dfb1bf3e4" title="SyncBot::sendFileAdd" alt="" coords="244,56,396,83"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#a40d08db3dbd7c12b8cd4233882e99be1" title="SyncBot::sendFileRemove" alt="" coords="231,107,409,133"/>
+<area shape="rect" id="node6" href="$class_sync_bot.html#aeb231be51780220d8c86016f0b80464a" title="SyncBot::sendDirAdd" alt="" coords="246,157,394,184"/>
+<area shape="rect" id="node7" href="$class_sync_bot.html#a5d3eca6fe81936c1dfe72d56f66462f2" title="SyncBot::sendDirRemove" alt="" coords="233,208,407,235"/>
+<area shape="rect" id="node4" href="$class_socket.html#aa035ac9346a7d5110acc112e1ae48745" title="Socket::sendMsg" alt="" coords="460,132,584,159"/>
+</map>

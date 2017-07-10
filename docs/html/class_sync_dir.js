@@ -1,0 +1,27 @@
+var class_sync_dir =
+[
+    [ "SyncDir", "class_sync_dir.html#adff51effa8050549a719e476aedcd5f2", null ],
+    [ "SyncDir", "class_sync_dir.html#a79c59b38199a0fe2637dd8cc85d85a59", null ],
+    [ "~SyncDir", "class_sync_dir.html#a3fa84f6e0e98f65de0b5220da0cce983", null ],
+    [ "addDir", "class_sync_dir.html#a227443a12e54a1013f0c701e07de66ee", null ],
+    [ "addFile", "class_sync_dir.html#a4194a09b602e8a724c2edf4a294fcfe3", null ],
+    [ "finish", "class_sync_dir.html#affe37fd8bcd35225ee6c15203a4d173f", null ],
+    [ "getFilePathWithoutSyncDir", "class_sync_dir.html#a863ad3ec3481fefb1cae2d311c3e8247", null ],
+    [ "getFilesSet", "class_sync_dir.html#a59ca696cd743a30916701a3c04cd87a4", null ],
+    [ "getModTimeOfFile", "class_sync_dir.html#a0ce47c6f40e0c87a9f161f845609d47d", null ],
+    [ "hasChanges", "class_sync_dir.html#a3de79162aeb1d9dc5b83a263ae9f1afb", null ],
+    [ "hasDir", "class_sync_dir.html#a760e83e536b31dcaccec79e51a348069", null ],
+    [ "hasFile", "class_sync_dir.html#abb237d978ac793317dfbda07a2d40903", null ],
+    [ "isUpdating", "class_sync_dir.html#a4828053b45ac5f8092052db1b08c477e", null ],
+    [ "modFile", "class_sync_dir.html#af12762537c6f78f372752e1b2e9a172f", null ],
+    [ "nextChange", "class_sync_dir.html#a0fc1977ccf6f379e3361800734c4a9ce", null ],
+    [ "popChanges", "class_sync_dir.html#ab5df1e89330634705cb0ed0757c60c9c", null ],
+    [ "popNextChange", "class_sync_dir.html#a5641fed42f4d872e2469887b6532cd97", null ],
+    [ "resumeUpdating", "class_sync_dir.html#a19324e5bfdb888a7ca577771360602d6", null ],
+    [ "rmDir", "class_sync_dir.html#a9404a72d297ea60af32aaf6a8bead00b", null ],
+    [ "rmFile", "class_sync_dir.html#ab7ed3f6335a9473d6829c74071bb420a", null ],
+    [ "setDir", "class_sync_dir.html#a0481948c3e715fdf931e015b9b0c0618", null ],
+    [ "stopUpdating", "class_sync_dir.html#aac7cefa5b878051e9dd638f537171441", null ],
+    [ "updateFilesAndDirs", "class_sync_dir.html#a3d4cc829a9a6e7a8f3f0e9a0f2429601", null ],
+    [ "autoUpdateDelayMS", "class_sync_dir.html#a9cadbb71bc129fb269b6dddb12850a7c", null ]
+];

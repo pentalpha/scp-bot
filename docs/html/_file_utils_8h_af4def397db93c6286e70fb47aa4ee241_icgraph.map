@@ -1,0 +1,10 @@
+<map id="timeToChar" name="timeToChar">
+<area shape="rect" id="node2" href="$_file_utils_8h.html#a20280590a6ec4dfd783d5342ae6d50dd" title="compareTwoFiles" alt="" coords="144,5,269,32"/>
+<area shape="rect" id="node3" href="$class_sync_bot.html#a67be338bc08283b0fd4f712c2548e022" title="SyncBot::fileUp" alt="" coords="331,81,446,108"/>
+<area shape="rect" id="node7" href="$class_sync_dir.html#a4194a09b602e8a724c2edf4a294fcfe3" title="SyncDir::addFile" alt="" coords="147,107,266,133"/>
+<area shape="rect" id="node9" href="$class_sync_dir.html#af12762537c6f78f372752e1b2e9a172f" title="SyncDir::modFile" alt="" coords="145,157,268,184"/>
+<area shape="rect" id="node4" href="$class_sync_bot.html#ae7902623548c1a07be644484b1f1eeb4" title="SyncBot::treatMessage" alt="" coords="508,81,667,108"/>
+<area shape="rect" id="node5" href="$class_sync_bot.html#a5fa22fef69ea28078e2243c59ad60677" title="SyncBot::treatMessagesCycle" alt="" coords="715,81,915,108"/>
+<area shape="rect" id="node6" href="$class_sync_bot.html#afa71b8f6b118673c24fb155eb932b938" title="SyncBot::SyncBot" alt="" coords="963,81,1093,108"/>
+<area shape="rect" id="node8" href="$class_sync_dir.html#a59ca696cd743a30916701a3c04cd87a4" title="SyncDir::getFilesSet" alt="" coords="317,144,460,171"/>
+</map>

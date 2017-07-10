@@ -1,0 +1,11 @@
+<map id="Server::startTransaction" name="Server::startTransaction">
+<area shape="rect" id="node2" href="$class_server.html#aa4dc17dfcf033937e34c5f5d887731fb" title="Server::isBinded" alt="" coords="234,31,353,57"/>
+<area shape="rect" id="node3" href="$class_server.html#a63eb8bdf1d3364e5aa9a1308ee3bb108" title="Server::waitForClient" alt="" coords="221,81,366,108"/>
+<area shape="rect" id="node7" href="$class_socket.html#ad35867417343a85bc02bac7aba017b8f" title="Socket::startReceiving" alt="" coords="216,157,371,184"/>
+<area shape="rect" id="node4" href="$class_server.html#afe6c3a6844daa1c1274d633c020f85e9" title="Server::startListening" alt="" coords="419,5,565,32"/>
+<area shape="rect" id="node5" href="$logging_8cpp.html#ace6db5e7f2d63c35ae790c0d870ef4b5" title="error" alt="" coords="661,56,709,83"/>
+<area shape="rect" id="node6" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="473,107,511,133"/>
+<area shape="rect" id="node8" href="$class_socket.html#af7a7f9179d24001ff109e8c33fa2f936" title="Socket::finish" alt="" coords="441,208,543,235"/>
+<area shape="rect" id="node10" href="$class_string_queue.html#a8d3dbc0b8f403053b2f98a980d7b3359" title="StringQueue::push" alt="" coords="427,259,557,285"/>
+<area shape="rect" id="node9" href="$class_socket.html#aacc2ad59fc693055e3c0adcdbb4da209" title="Socket::closeSocket" alt="" coords="613,208,756,235"/>
+</map>

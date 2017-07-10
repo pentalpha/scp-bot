@@ -1,14 +1,3 @@
-*.*
-!*.c
-!LICENSE
-!*Makefile
-!*.md
-!*.cpp
-!*.h
-!*.sh
-!*.pdf
-!*.odp
-!*.config
-!docs*
 testingSyncs*
 bin*
+.syncConfig

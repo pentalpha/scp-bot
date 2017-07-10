@@ -1,0 +1,5 @@
+<map id="Client::sendMsg" name="Client::sendMsg">
+<area shape="rect" id="node2" href="$class_socket.html#a4a27ca54e463c03b60b265544b55e2b8" title="Socket::sendAMsg" alt="" coords="171,31,304,57"/>
+<area shape="rect" id="node3" href="$logging_8cpp.html#a95b6fc9a6162931e648e46a46134b23f" title="log" alt="" coords="357,5,395,32"/>
+<area shape="rect" id="node4" href="$logging_8cpp.html#ace6db5e7f2d63c35ae790c0d870ef4b5" title="error" alt="" coords="352,56,400,83"/>
+</map>

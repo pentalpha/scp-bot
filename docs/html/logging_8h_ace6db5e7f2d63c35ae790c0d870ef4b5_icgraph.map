@@ -1,0 +1,22 @@
+<map id="error" name="error">
+<area shape="rect" id="node2" href="$class_arg_parser.html#a7e35e9eff9dd916f0f5d6f17e473ad83" title="ArgParser::ArgParser" alt="" coords="121,5,268,32"/>
+<area shape="rect" id="node3" href="$class_client.html#a9a63ac21f512edd7e599ab6f7c3369d4" title="Client::startTransaction" alt="" coords="357,208,515,235"/>
+<area shape="rect" id="node4" href="$class_octo_sync_args.html#a5d7f6a62cc7c913856b040602640fa8c" title="OctoSyncArgs::OctoSyncArgs" alt="" coords="584,81,784,108"/>
+<area shape="rect" id="node5" href="$class_octo_sync_args.html#ad7790dd7826d43972775922952f515bf" title="OctoSyncArgs::validateArgs" alt="" coords="101,56,288,83"/>
+<area shape="rect" id="node7" href="$class_server.html#a9b4101f780a545651c985c6cf6a76b62" title="Server::doBind" alt="" coords="141,157,249,184"/>
+<area shape="rect" id="node9" href="$class_server.html#afe6c3a6844daa1c1274d633c020f85e9" title="Server::startListening" alt="" coords="121,360,268,387"/>
+<area shape="rect" id="node10" href="$class_server.html#a63eb8bdf1d3364e5aa9a1308ee3bb108" title="Server::waitForClient" alt="" coords="363,309,509,336"/>
+<area shape="rect" id="node12" href="$class_socket.html#ab796f876b2822c12b5f2c99234cad255" title="Socket::createSocket" alt="" coords="121,411,269,437"/>
+<area shape="rect" id="node15" href="$class_socket.html#ad35867417343a85bc02bac7aba017b8f" title="Socket::startReceiving" alt="" coords="117,259,272,285"/>
+<area shape="rect" id="node16" href="$class_socket.html#a4a27ca54e463c03b60b265544b55e2b8" title="Socket::sendAMsg" alt="" coords="128,461,261,488"/>
+<area shape="rect" id="node19" href="$class_sync_bot.html#afa71b8f6b118673c24fb155eb932b938" title="SyncBot::SyncBot" alt="" coords="619,537,749,564"/>
+<area shape="rect" id="node20" href="$class_sync_bot.html#ae7902623548c1a07be644484b1f1eeb4" title="SyncBot::treatMessage" alt="" coords="115,512,274,539"/>
+<area shape="rect" id="node6" href="$class_octo_sync_args.html#a449fcd27512c940c2234ac641af4fa9a" title="OctoSyncArgs::findArgs" alt="" coords="355,56,517,83"/>
+<area shape="rect" id="node8" href="$class_server.html#a5f49c73b417f31c8ea59f71e05547b14" title="Server::Server" alt="" coords="383,157,489,184"/>
+<area shape="rect" id="node11" href="$class_server.html#ab8107ff8082b1ac6199acc095c3184ea" title="Server::startTransaction" alt="" coords="603,284,765,311"/>
+<area shape="rect" id="node13" href="$class_socket.html#adfc522abd7dcb91832d0287f4cd93ceb" title="Socket::config" alt="" coords="383,360,489,387"/>
+<area shape="rect" id="node14" href="$class_socket.html#a1fb90c66dbcaba9e788cf354f4b34c53" title="Socket::Socket" alt="" coords="628,360,740,387"/>
+<area shape="rect" id="node17" href="$class_client.html#a8f26f3c98411689848b80cde9fa6914f" title="Client::sendMsg" alt="" coords="377,461,495,488"/>
+<area shape="rect" id="node18" href="$class_server.html#a8937cfeacdf8dbf5d68bcb88d3478528" title="Server::sendMsg" alt="" coords="375,411,497,437"/>
+<area shape="rect" id="node21" href="$class_sync_bot.html#a5fa22fef69ea28078e2243c59ad60677" title="SyncBot::treatMessagesCycle" alt="" coords="336,512,536,539"/>
+</map>

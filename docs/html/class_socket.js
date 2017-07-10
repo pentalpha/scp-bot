@@ -1,0 +1,26 @@
+var class_socket =
+[
+    [ "Socket", "class_socket.html#a1fb90c66dbcaba9e788cf354f4b34c53", null ],
+    [ "closeSocket", "class_socket.html#aacc2ad59fc693055e3c0adcdbb4da209", null ],
+    [ "config", "class_socket.html#adfc522abd7dcb91832d0287f4cd93ceb", null ],
+    [ "configAddr", "class_socket.html#ab40e6195b8b91c28c6532f9adfdfc391", null ],
+    [ "createSocket", "class_socket.html#ab796f876b2822c12b5f2c99234cad255", null ],
+    [ "finish", "class_socket.html#af7a7f9179d24001ff109e8c33fa2f936", null ],
+    [ "getMessage", "class_socket.html#a7c0ec996939325e7800cb7eb6b0a9a3c", null ],
+    [ "isAsleep", "class_socket.html#a9d1897f754dc3619a58bfc0f916461be", null ],
+    [ "isConnected", "class_socket.html#a60c76a4c1e26192218d598b63cbb97b9", null ],
+    [ "sendAMsg", "class_socket.html#a4a27ca54e463c03b60b265544b55e2b8", null ],
+    [ "sendMsg", "class_socket.html#aa035ac9346a7d5110acc112e1ae48745", null ],
+    [ "startReceiving", "class_socket.html#ad35867417343a85bc02bac7aba017b8f", null ],
+    [ "startTransaction", "class_socket.html#abced757627f06b9296eff755db00ff94", null ],
+    [ "waitToFinish", "class_socket.html#a0800200e02b12a35cc3360688b2bca45", null ],
+    [ "addr", "class_socket.html#a7d8dd6d0de13cad19af31e21bfdfd770", null ],
+    [ "asleep", "class_socket.html#a741493a04bec3165bf469c133e620bd6", null ],
+    [ "connected", "class_socket.html#acf0740141ed83d71850b892d84ea9b7f", null ],
+    [ "exitFlag", "class_socket.html#af22b0056cc865635cee54f6b8734e4e8", null ],
+    [ "hostAddress", "class_socket.html#aa6e50be48f170d464ed7997bbbd0ad7a", null ],
+    [ "hostPort", "class_socket.html#a64616fa14d95064fba46cbbd8c46529e", null ],
+    [ "received", "class_socket.html#a63fd84268c9681b036976041bd0653c2", null ],
+    [ "receiving", "class_socket.html#af69b2f784fdc26fdb0d2bf7e42bebcc2", null ],
+    [ "socketId", "class_socket.html#ae66b55ee7dc4b4b9e116a4dc62637c06", null ]
+];
