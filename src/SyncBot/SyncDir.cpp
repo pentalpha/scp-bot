@@ -1,4 +1,7 @@
-#include "SyncDir.h"
+#include "../../include/SyncDir.h"
+
+const int SyncDir::autoUpdateDelayMS = 500;
+const int SyncDir::changeTimeTolerance = 2;
 
 SyncDir::SyncDir(){
     bool local = false;
@@ -36,11 +39,7 @@ SyncDir::~SyncDir(){
     }
 }
 
-time_t SyncDir::getModTimeOfFile(string filePath){
-    return files[filePath].lastModification;
-}
-
-string SyncDir::getFilePathWithoutSyncDir(string filePath)
+string SyncDir::absolutePathToRelative(string filePath)
 {
     if(filePath.find(directory) != string::npos){
         string subPath = filePath.substr(directory.length(),
@@ -53,12 +52,48 @@ string SyncDir::getFilePathWithoutSyncDir(string filePath)
     return "";
 }
 
+string SyncDir::relativePathToAbsolute(string filePath){
+    string rPath = directory;
+    if(directory[directory.length()-1] == '/'){
+        rPath = rPath.substr(0, rPath.length()-1);
+    }
+    if(filePath[0] == '/'){
+        filePath = filePath.substr(1, filePath.length());
+    }
+    rPath += '/';
+    rPath += filePath;
+    return rPath;
+}
+
 bool SyncDir::hasDir(string dir){
-    return (subDirs.find(dir) != subDirs.end());
+    if(dir.find(directory) != string::npos){
+        return (subDirs.find(dir) != subDirs.end());
+    }else{
+        string rDir = relativePathToAbsolute(dir);
+        return (subDirs.find(rDir) != subDirs.end());
+    }
 }
 
 bool SyncDir::hasFile(string file){
-    return (files.find(file) != files.end());
+    if((file.find(directory) != string::npos)){
+        return (files.find(file) != files.end());
+    }else{
+        string rFile = relativePathToAbsolute(file);
+        return (files.find(rFile) != files.end());
+    }
+}
+
+time_t SyncDir::getModTimeOfFile(string filePath){
+    if(files.find(filePath) != files.end()){
+        return files[filePath].lastModification;
+    }else{
+        filePath = relativePathToAbsolute(filePath);
+        if(files.find(filePath) != files.end()){
+            return files[filePath].lastModification;
+        }else{
+            return 0;
+        }
+    }
 }
 
 
@@ -124,7 +159,7 @@ void SyncDir::rmDir(string dirPath){
 void SyncDir::updateFilesAndDirs(bool delay){
     updatingFlag = true;
     if(delay){
-        std::this_thread::sleep_for(std::chrono::milliseconds(autoUpdateDelayMS));
+        std::this_thread::sleep_for(std::chrono::milliseconds(SyncDir::autoUpdateDelayMS));
     }
     //std::lock_guard<std::mutex> guard(updateMutex);
     updateDirs();
@@ -147,7 +182,7 @@ void SyncDir::searchForNewFiles(){
     for(tinydir_file file : scanned){
         if(files.find(file.path) == files.end()){
             FileInfo info = getFileInfo(file);
-            if(info.path.find(OctoSyncArgs::configFileName) == string::npos){
+            if(info.path.find(SyncArgs::configFileName) == string::npos){
                 addFile(info);
             }
         }else{
@@ -163,7 +198,7 @@ void SyncDir::searchForNewFiles(){
 void SyncDir::updateModTimes(){
     for(pair<string, FileInfo> fileEntry : files){
         time_t lastMod = getLastModTime(fileEntry.first.c_str());
-        if(lastMod > fileEntry.second.lastModification + 2){
+        if(lastMod > fileEntry.second.lastModification + changeTimeTolerance){
             modFile(fileEntry.first, lastMod);
         }else{
             log(0, "SYNC-DIR", fileEntry.second.path + string(" remains the same."));
@@ -187,10 +222,6 @@ void SyncDir::updateDirs(){
     for(string deletedDir : deletedDirs){
         rmDir(deletedDir);
     }
-}
-
-SyncDirDiff SyncDir::diff(SyncDir* other){
-    //TODO
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +353,7 @@ void SyncDir::updateCycle(){
             //updatingFlag = true;
             updateFilesAndDirs();
             //updatingFlag = false;
-            std::this_thread::sleep_for(std::chrono::milliseconds(autoUpdateDelayMS));
+            std::this_thread::sleep_for(std::chrono::milliseconds(SyncDir::autoUpdateDelayMS));
         }
     }
 }
@@ -357,4 +388,35 @@ SyncChange SyncDir::getRmDirChange(string path){
     c.isFile = false;
     c.path = path;
     return c;
+}
+
+
+deque<SyncChange> SyncDir::diff(SyncDir &other){
+    deque<SyncChange> changes;
+    for(string dir : subDirs){
+        string relativePath = absolutePathToRelative(dir);
+        if(other.hasDir(relativePath) == false){
+            changes.push_back(getUpDirChange(dir));
+        }
+    }
+
+    for(auto entry : files){
+        bool addThisFile = false;
+        string relativePath = absolutePathToRelative(entry.first);
+        if(other.hasFile(relativePath)){
+            time_t otherFileModTime = other.getModTimeOfFile(relativePath);
+            if(otherFileModTime + changeTimeTolerance < entry.second.lastModification){
+                addThisFile = true;
+            }
+        }else{
+            addThisFile = true;
+            log(3, "SYNC-DIR", string("Present locally but not on the remote: ") + relativePath);
+        }
+
+        if(addThisFile){
+            changes.push_back(getUpFileChange(entry.first));
+        }
+    }
+
+    return changes;
 }

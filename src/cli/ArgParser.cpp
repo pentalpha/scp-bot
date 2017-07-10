@@ -1,4 +1,4 @@
-#include "ArgParser.h"
+#include "../../include/ArgParser.h"
 
 ArgParser::ArgParser(int argc, char * argv[]){
     argCount = argc;

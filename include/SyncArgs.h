@@ -12,9 +12,9 @@ using namespace std;
 
 #define DEFAULT_HOST_PORT 50002
 
-class OctoSyncArgs : public ArgParser{
+class SyncArgs : public ArgParser{
 public:
-    OctoSyncArgs(int argc, char * argv[]);
+    SyncArgs(int argc, char * argv[]);
 
     bool findArgs();
     bool validateArgs();

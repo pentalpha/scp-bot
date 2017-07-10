@@ -10,7 +10,7 @@ void runWhileSilent(vector<string> commands):
   commands  Vector of commands to be executed in sequence. If one of the commands
             outputs anything, the commands after him will be canceled.
 */
-#include "run.h"
+#include "../include/run.h"
 
 void runWhileSilent(vector<string> commands){
   string output;

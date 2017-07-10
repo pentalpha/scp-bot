@@ -1,4 +1,4 @@
-#include "Client.h"
+#include "../../include/Client.h"
 
 Client::Client(std::string hostAddr, int portN)
     : Socket(hostAddr, portN)

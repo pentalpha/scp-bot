@@ -15,7 +15,7 @@
 #include "Client.h"
 #include "FileUtils.h"
 #include "SyncDir.h"
-#include "OctoSyncArgs.h"
+#include "SyncArgs.h"
 
 using namespace std;
 
@@ -23,8 +23,9 @@ enum SyncBotState{
     SLEEP = 0,
     WAITING = 1,
     AUTH = 2,
-    SHARE = 3,
-    SYNC = 4
+    INFO_SHARE = 3,
+    CHANGE_SHARE = 4,
+    REALTIME_SYNC= 5
 };
 
 enum AuthState{
@@ -38,20 +39,46 @@ enum SyncAllowState{
     ALLOWED = 9,
     DENYED = 8
 };
-
+/*
+* Message dialog:
+*    Auth message:
+*        auth [local password] [local sync dir] [scpPort]
+*            scp port is optional
+*    Login message:
+*        login [host password]
+*    Add directory to remote:
+*        dir add [dir name];
+*    Remove directory on remote:
+*        dir rm [dir name];
+*    Update/Add file to remote:
+*        file up [file-name] [last-mod-time]
+*    Remove file from remote:
+*        file rm [file-name]
+*    Signal to remote that all the info has been shared:
+*        shared-all-info
+*    Signal to remote that all the files has been shared:
+*        shared-all-changes
+*    Init micro-sync:
+*        start-sync
+*    Sync allowed:
+*        allow-sync
+*    Sync denyed:
+*        deny-sync
+*    End micro-sync:
+*        end-sync
+*    Make a directory:
+*        mkdir [dir]
+*    Delete a directory:
+*        rm -Rf [dir]
+*    Delete file:
+*        rm -f [file]
+*    
+*/
 /* Friendly bot that helps synchronizing files and dirs*/
 class SyncBot{
 public:
-    /*default mode: server, no passwd required
-    dir = local dir to sync
-    ip = hosting machine ipv4
-    port = hosting machine port
-    server = True if hosting, False if only sync
-    passwd = hosting machine passwd, necessary if not a host*/
-    //SyncBot(string dir, string ip, int port, bool server = true, string passwd = "");
-
     //Start SyncBot using parsed command line args
-    SyncBot(OctoSyncArgs args);
+    SyncBot(SyncArgs args);
 
     //start sync process, blocking
     bool run();
@@ -79,7 +106,7 @@ protected:
     bool sendAuthMessage();
     bool hasRemoteAuthorization();
 
-    void share();
+    void infoShare();
     void sendChangeInfo(SyncChange change);
     void sendDirRemove(string dir);
     void sendDirAdd(string dir);
@@ -89,14 +116,19 @@ protected:
     void sendAllowSync();
     void sendDenySync();
     void sendEndSync();
-    void sendSharedAll();
+    void sendSharedAllInfo();
+    void printChangesToSend();
 
-    void sync();
+    void changeShare();
     void sendChange(SyncChange change);
     void sendDeleteFile(string file);
     void sendFile(string localFile, string remoteFile);
     void sendDeleteDir(string dir);
     void sendMkdir(string dir);
+    void sendSharedAllChanges();
+
+    void sync();
+    
     /*//Sync all info
     void syncInfo();
     //Sync only dir info
@@ -124,7 +156,8 @@ protected:
     void dir(string op, string dir);
     void fileUp(string file, time_t lastMod);
     void fileRemove(string file);
-    void remoteSharedAll();
+    void remoteSharedAllInfo();
+    void remoteSharedAllChanges();
     void remoteStartSync();
     void allowedToSync();
     void denyedToSync();
@@ -136,7 +169,10 @@ protected:
     //receiving update from remote / sending update to remote
     //bool remoteUpdating, localUpdating;
     //mutex localUpdating, remoteUpdating;
-    bool sharedInitialInfo, remoteSharedInitialInfo;
+    bool sharedAllInfoFlag, remoteSharedAllInfoFlag;
+    bool sharedAllChangesFlag, remoteSharedAllChangesFlag;
+    deque<SyncChange> onLocalButNotInRemote;
+
     mutex syncLock;
     //port for local socket
     int hostPort;
@@ -164,38 +200,8 @@ protected:
     bool finishFlag;
     bool authByRemote;
     SyncAllowState syncAllowState;
-/*Message dialog:
-    Auth message:
-        auth [local password] [local sync dir] [scpPort]
-            scp port is optional
-    Login message:
-        login [host password]
-    Add directory to remote:
-        dir add [dir name];
-    Remove directory on remote:
-        dir rm [dir name];
-    Update/Add file to remote:
-        file up [file-name] [last-mod-time]
-    Remove file from remote:
-        file rm [file-name]
-    Signal to remote that all the initial info has been shared:
-        shared-all
-    Init micro-sync:
-        start-sync
-    Sync allowed:
-        allow-sync
-    Sync denyed:
-        deny-sync
-    End micro-sync:
-        end-sync
-    Make a directory:
-        mkdir [dir]
-    Delete a directory:
-        rm -Rf [dir]
-    Delete file:
-        rm -f [file]
-    
-*/
+
+
 };
 
 

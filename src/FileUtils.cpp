@@ -1,4 +1,4 @@
-#include "FileUtils.h"
+#include "../include/FileUtils.h"
 
 bool fileExists(const char* file) {
     struct stat buf;

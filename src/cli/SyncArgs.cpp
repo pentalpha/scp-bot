@@ -1,18 +1,18 @@
-#include "OctoSyncArgs.h"
+#include "../../include/SyncArgs.h"
 
-const string OctoSyncArgs::syncCmdArgName = "sync";
-const string OctoSyncArgs::hostCmdArgName = "host";
-const string OctoSyncArgs::syncDirArgName = "syncDir";
-const string OctoSyncArgs::hostAddressArgName = "hostAddress";
-const string OctoSyncArgs::hostPortArgName = "hostPort";
-const string OctoSyncArgs::localPasswdArgName = "localPasswd";
-const string OctoSyncArgs::hostPasswdArgName = "hostPasswd";
-const string OctoSyncArgs::scpPortArgName = "scpPort";
-const string OctoSyncArgs::loggingLevelArgName = "logLevel";
+const string SyncArgs::syncCmdArgName = "sync";
+const string SyncArgs::hostCmdArgName = "host";
+const string SyncArgs::syncDirArgName = "syncDir";
+const string SyncArgs::hostAddressArgName = "hostAddress";
+const string SyncArgs::hostPortArgName = "hostPort";
+const string SyncArgs::localPasswdArgName = "localPasswd";
+const string SyncArgs::hostPasswdArgName = "hostPasswd";
+const string SyncArgs::scpPortArgName = "scpPort";
+const string SyncArgs::loggingLevelArgName = "logLevel";
 
-const string OctoSyncArgs::configFileName = ".syncConfig";
+const string SyncArgs::configFileName = ".syncConfig";
 
-OctoSyncArgs::OctoSyncArgs(int argc, char * argv[])
+SyncArgs::SyncArgs(int argc, char * argv[])
 : ArgParser(argc, argv)
 {
     if(!helpOperation()){
@@ -37,7 +37,7 @@ OctoSyncArgs::OctoSyncArgs(int argc, char * argv[])
     }
 }
 
-void OctoSyncArgs::readValuesFromConfigFile(){
+void SyncArgs::readValuesFromConfigFile(){
     if(syncDir.length()>0){
         bool lastCharIsSlash = syncDir[syncDir.length()-1] == '/';
         string file = syncDir;
@@ -67,7 +67,7 @@ void OctoSyncArgs::readValuesFromConfigFile(){
 
 }
 
-void OctoSyncArgs::writeValuesToConfigFile(){
+void SyncArgs::writeValuesToConfigFile(){
     if(syncDir.length()>0){
         bool lastCharIsSlash = syncDir[syncDir.length()-1] == '/';
         string file = syncDir;
@@ -91,7 +91,7 @@ void OctoSyncArgs::writeValuesToConfigFile(){
 
 }
 
-bool OctoSyncArgs::findArgs(){
+bool SyncArgs::findArgs(){
     if(args.find(hostAddressArgName) != args.end()){
         hostAddress = args[hostAddressArgName];
     }
@@ -119,7 +119,7 @@ bool OctoSyncArgs::findArgs(){
     return validateArgs();
 }
 
-bool OctoSyncArgs::validateArgs(){
+bool SyncArgs::validateArgs(){
     /*if(syncDir == ""){
         error("OCTO-SYNC-ARGS", string("No synchronization directory defined"));
         return false;
@@ -160,7 +160,7 @@ bool OctoSyncArgs::validateArgs(){
     return true;
 }
 
-void OctoSyncArgs::printGivenArgs(){
+void SyncArgs::printGivenArgs(){
     if(sync){
         cout << "SYNC";
     }else{
@@ -190,7 +190,7 @@ void OctoSyncArgs::printGivenArgs(){
     }
 }
 
-void OctoSyncArgs::printHelp(){
+void SyncArgs::printHelp(){
     cout << syncCmdArgName << " or " << hostCmdArgName << endl
     << "\t" << "The operation to perform: either host or sync;" << endl
     << "\t" << "The host must be the first instance to be executed, it will wait for a connection;" << endl
@@ -238,7 +238,7 @@ char getch(){
     return buf;
 }
 
-string OctoSyncArgs::getSecretString(){
+string SyncArgs::getSecretString(){
     //initscr();
     string passwd = "";
     char tempchar[2] = "";  // Temporary character array 

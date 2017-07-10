@@ -1,4 +1,4 @@
-#include "logging.h"
+#include "../include/logging.h"
 
 std::mutex loggingMutex;
 

@@ -12,16 +12,23 @@
 #include <list>
 #include "FileUtils.h"
 #include "logging.h"
-#include "OctoSyncArgs.h"
-
-struct SyncDirDiff{
-    vector<string> missingDirs, missingFiles;
-    vector<string> newDirs, newFiles;
-};
+#include "SyncArgs.h"
 
 struct SyncChange{
     bool isUp, isFile;
     string path;
+
+    inline string toString(){
+        string type = "File";
+        if(!isFile){
+            type = "Directory";
+        }
+        string op = "Create";
+        if(!isUp){
+            op = "Delete";
+        }
+        return op + string(" ") + type + string(" '") + path + string("'");
+    }
 };
 
 
@@ -29,12 +36,13 @@ struct SyncChange{
 //Directory to sync. Can represent the data on the remote too
 class SyncDir{
 public:
-    const int autoUpdateDelayMS = 500;
+    static const int autoUpdateDelayMS;
+    static const int changeTimeTolerance;
     SyncDir(string dir, bool local = true);
     SyncDir();
     void setDir(string dir);
     ~SyncDir();
-    static SyncDirDiff diff(SyncDir* other);
+    deque<SyncChange> diff(SyncDir &other);
     void updateFilesAndDirs(bool delay = false);
     void addFile(FileInfo file);
     void modFile(string filePath, time_t newModTime);
@@ -54,11 +62,16 @@ public:
     void popNextChange();
     bool hasChanges();
 
-    string getFilePathWithoutSyncDir(string filePath);
+    string absolutePathToRelative(string filePath);
+    string relativePathToAbsolute(string filePath);
     
     bool hasDir(string dir);
     bool hasFile(string file);
     time_t getModTimeOfFile(string filePath);
+
+    inline string getDirectory(){
+        return directory;
+    }
 private:
     void updateCycle();
     

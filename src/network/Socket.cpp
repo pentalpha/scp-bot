@@ -1,4 +1,4 @@
-#include "Socket.h"
+#include "../../include/Socket.h"
 
 Socket::Socket(std::string hostAddr, int portN)
     : hostPort(portN), hostAddress(hostAddr)
