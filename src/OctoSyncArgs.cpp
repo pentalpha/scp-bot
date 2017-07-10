@@ -10,7 +10,7 @@ const string OctoSyncArgs::hostPasswdArgName = "hostPasswd";
 const string OctoSyncArgs::scpPortArgName = "scpPort";
 const string OctoSyncArgs::loggingLevelArgName = "logLevel";
 
-const string OctoSyncArgs::configFileName = ".octoConfig";
+const string OctoSyncArgs::configFileName = ".syncConfig";
 
 OctoSyncArgs::OctoSyncArgs(int argc, char * argv[])
 : ArgParser(argc, argv)

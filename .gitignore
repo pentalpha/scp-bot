@@ -8,3 +8,7 @@
 !*.sh
 !*.pdf
 !*.odp
+!*.config
+!docs*
+testingSyncs*
+bin*
